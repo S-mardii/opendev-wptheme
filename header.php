@@ -32,7 +32,7 @@
 <meta property="og:description" content="<?php echo strip_tags(get_the_excerpt($post->ID)); ?>" />
 <meta property="og:site_name" content="<?php bloginfo('name'); ?>"/>
 <meta property="og:type" content="<?php echo get_post_type(); ?>" />
-<meta property="og:image" content="<?php echo wp_get_attachment_thumb_url( get_post_thumbnail_id( $post->ID ) ) ?>" />
+<meta property="og:image" content="<?php $img_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full', false); echo $img_src[0]; ?>" />
 <title><?php
     global $page, $paged;
 
