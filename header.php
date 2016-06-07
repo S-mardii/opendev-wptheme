@@ -32,7 +32,8 @@
 <meta property="og:description" content="<?php echo strip_tags(get_the_excerpt($post->ID)); ?>" />
 <meta property="og:site_name" content="<?php bloginfo('name'); ?>"/>
 <meta property="og:type" content="<?php echo get_post_type(); ?>" />
-<meta property="og:image" content="<?php $img_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full', false); echo $img_src[0]; ?>" />
+<meta property="og:image:secure_url" content="<?php $img_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full', false); echo $img_src[0]; ?>" />
+<meta property="og:url" content="<?php echo get_permalink()?>" />
 <title><?php
     global $page, $paged;
 
