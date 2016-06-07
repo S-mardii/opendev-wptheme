@@ -52,14 +52,14 @@
                                     'include_children' => false
                                   )
                                 )
-          );
+                              );
             $base_layer_posts = get_posts( $args_base_layer );
             if($base_layer_posts){
                 $base_layers_array = array();
-                echo '<div class="baselayer-container">';
+                echo '<div class="baselayer-container box-shadow"><ul class="baselayer-ul">';
                 foreach ( $base_layer_posts as $baselayer ) :
                     setup_postdata( $baselayer ); ?>
-                    <div class="baselayer" data-layer="<?php echo $baselayer->ID; ?>"><?php echo $baselayer->post_title; ?></div>
+                    <li class="baselayer" data-layer="<?php echo $baselayer->ID; ?>"><?php echo $baselayer->post_title; ?></li>
                     <?php
                         if (get_post_meta($baselayer->ID, '_mapbox_id', true))
                             $base_layers_array[$baselayer->ID] =  array("layer_url" => get_post_meta($baselayer->ID, '_mapbox_id', true));
@@ -68,7 +68,7 @@
 
                             $base_layers[] = $this->add_post_to_map_array($baselayer->ID);
                 endforeach;
-                echo '</div>'; //baselayers
+                echo '</ul></div>'; //baselayers
                 wp_reset_postdata();
             }
 
@@ -261,8 +261,10 @@
         var resize_height_map_category = window.innerHeight - $("#od-head").height() + "px";
         var resize_height_map_layer = window.innerHeight - $("#od-head").height() - 41+ "px";
         var resize_layer_toggle_info = $(".layer-toggle-info-container").height() -30 + "px";
+        var get_bottom_possition_baselayer = $(".baselayer-container").height() + 20 + "px";
 
         $(".page-template-page-map-explorer .interactive-map .map-container").css("height", resize_height_map_container);
+        $(".page-template-page-map-explorer .category-map-layers").css("top", get_bottom_possition_baselayer);
         $(".page-template-page-map-explorer .category-map-layers").css("max-height", resize_height_map_category);
         $(".page-template-page-map-explorer .interactive-map-layers").css("max-height", resize_height_map_layer);
         $(".page-template-page-map-explorer .layer-toggle-info").css("max-height", resize_layer_toggle_info);

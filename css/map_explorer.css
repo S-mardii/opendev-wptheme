@@ -49,8 +49,8 @@ body.page-template-page-map-explorer{overflow: hidden;}
   margin: 0;
 }
 .page-template-page-map-explorer .category-map-layers{
-  top: 12px;
-    /*bottom: 15px;*/
+    /*top: 55px;
+  bottom: 15px;*/
   position: absolute;
   z-index: 100;
   background: white;
@@ -466,9 +466,25 @@ div.cartodb-legend-stack{
     position: absolute;
     display: block;
     right: 10px;
-    top: 0;
+    top: 10px;
     z-index: 888;
+    width: 270px;
+    background: #fff;
 }
-.baselayer-container div{
+.baselayer-container ul{
+  margin: 10px 8px;
+  padding: 0;
+}
+.baselayer-container li{
   display: inline-block;
+  border-right: 1px solid #ddd;
+  padding-right: 5px;
+  margin-right: 3px;
+  margin: 0;
+}
+.baselayer-container li:last-child{
+  border-right: 0;
+  padding-right: 0;
+  margin-right: 0;
+
 }
