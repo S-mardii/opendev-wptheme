@@ -21,14 +21,13 @@
     $ckanDomain = 'data.'.$just_domain;
   }
 ?>
-<?php ?>
 <!DOCTYPE html>
 <html data-country="<?php echo $country; ?>" <?php language_attributes(); ?>>
 
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="<?php bloginfo('charset'); ?>" />
-<?php if (have_posts()):while(have_posts()):the_post();endwhile;endif;?>
+<?php if (have_posts()):while(have_posts()): the_post(); endwhile; endif;?>
 <meta property="og:title" content="<?php the_title(); ?>" />
 <meta property="og:description" content="<?php echo strip_tags(get_the_excerpt($post->ID)); ?>" />
 <meta property="og:site_name" content="<?php bloginfo('name'); ?>"/>
