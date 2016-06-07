@@ -2,21 +2,6 @@
   $wpDomain=$_SERVER["HTTP_HOST"];
   $domain='opendevelopmentmekong.net';
   $preprod = false;
-/*
-  if ($wpDomain == 'cambodia.opendevelopmentmekong.net'){$country='cambodia';$country_short='kh';}
-  else if ($wpDomain == 'laos.opendevelopmentmekong.net'){$country='laos';$country_short='la';}
-  else if ($wpDomain == 'myanmar.opendevelopmentmekong.net'){$country='myanmar';$country_short='mm';}
-  else if ($wpDomain == 'thailand.opendevelopmentmekong.net'){$country='thailand';$country_short='th';}
-  else if ($wpDomain == 'vietnam.opendevelopmentmekong.net'){$country='vietnam';$country_short='vn';}
-  else {$country='mekong';$country_short='';}
-
-
-  if ($wpDomain == 'pp-cambodia.opendevelopmentmekong.net'){$country='cambodia';$country_short='kh';$preprod=true;}
-  else if ($wpDomain == 'pp-laos.opendevelopmentmekong.net'){$country='laos';$country_short='la';$preprod=true;}
-  else if ($wpDomain == 'pp-myanmar.opendevelopmentmekong.net'){$country='myanmar';$country_short='mm';$preprod=true;}
-  else if ($wpDomain == 'pp-thailand.opendevelopmentmekong.net'){$country='thailand';$country_short='th';$preprod=true;}
-  else if ($wpDomain == 'pp-vietnam.opendevelopmentmekong.net'){$country='vietnam';$country_short='vn';$preprod=true;}
-  else {$country='mekong';$country_short='';} */
 
   if (COUNTRY_NAME == 'cambodia'){$country='cambodia';$country_short='kh';$preprod=true;}
   else if (COUNTRY_NAME == 'laos'){$country='laos';$country_short='la';$preprod=true;}
@@ -34,10 +19,6 @@
     $full_domain = $_SERVER['SERVER_NAME'];
     $just_domain = preg_replace("/^(.*\.)?([^.]*\..*)$/", "$2", $_SERVER['HTTP_HOST']);
     $ckanDomain = 'data.'.$just_domain;
-    /*$ckanDomain='data.opendevelopmentmekong.net';
-    if ($preprod == true){
-      $ckanDomain='pp-data.opendevelopmentmekong.net';
-    }*/
   }
 ?>
 <?php ?>
@@ -47,6 +28,12 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="<?php bloginfo('charset'); ?>" />
+<?php if (have_posts()):while(have_posts()):the_post();endwhile;endif;?>
+<meta property="og:title" content="<?php the_title(); ?>" />
+<meta property="og:description" content="<?php echo strip_tags(get_the_excerpt($post->ID)); ?>" />
+<meta property="og:site_name" content="<?php bloginfo('name'); ?>"/>
+<meta property="og:type" content="<?php echo get_post_type(); ?>" />
+<meta property="og:image" content="<?php echo wp_get_attachment_thumb_url( get_post_thumbnail_id( $post->ID ) ) ?>" />
 <title><?php
     global $page, $paged;
 
