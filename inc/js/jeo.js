@@ -107,9 +107,7 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
   if(conf.postID)
    map.postID = conf.postID;
 
-  // layers
-  console.log("conf");
-  console.log(conf);
+  // layers 
   default_baselayer = conf.baselayers[0]; //conf.layers[0];
   jeo.loadLayers(map, jeo.parse_layer(map, default_baselayer));
 
@@ -404,7 +402,7 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
      }//else
   }//end function
 
-  
+
  /*
   * Utils
   */

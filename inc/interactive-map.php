@@ -29,6 +29,7 @@
  	function shortcode() {
     $layers = array();
     $base_layers = array();
+    $layers_legend = array();
     $cat_baselayers = 'base-layer';
     $term_baselayers = get_term_by('slug', $cat_baselayers, 'layer-category');
     $cat_baselayers_id =  $term_baselayers->term_id;
@@ -94,8 +95,8 @@
                                     $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
                                   }
 
-                                  if($layer_legend!=""){ ?>
-                                    <div class="legend"><?php echo $layer_legend; ?></div>
+                                  if($layer_legend!=""){
+                                      $layers_legend[get_the_ID()] = '<div class="legend">'. $layer_legend.'</div>';  ?>
                                   <?php }
                                   if($layer_download_link!=""){ ?>
                                     <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
@@ -280,6 +281,7 @@
           var cancel = false;
 
           var all_layers_value = <?php echo json_encode($layers) ?>;
+          var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
 					$layers.find('.cat-layers li').on('click', function(e) {
               var target =  $( e.target );
               if (target.is( "span" ) ) {
@@ -295,9 +297,9 @@
                 }else {
                   $(this).addClass('loading');
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
-                  var get_legend = $(this).find(".legend").html();
+                  var get_legend = all_layers_legends[get_layer_id]; //$(this).find(".legend").html(); 
                   if( typeof get_legend != "undefined"){
-                      var legend_li = '<li class="hide_show_container '+$(this).data('layer')+'">'+ $(this).find(".legend").html()+'</li>';
+                      var legend_li = '<li class="hide_show_container '+$(this).data('layer')+'">'+ get_legend +'</li>';
                       $('.map-legend-ul').prepend(legend_li);
 
                       // Add class title to the legend title
@@ -305,7 +307,6 @@
                       if (legend_h5.length == 0){
                         var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+'</h5>';
                         $( ".map-legend-ul ."+$(this).data('layer')+" .cartodb-legend" ).prepend(h5_title);
-
                       }
                       var legend_h5_title = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
                       legend_h5_title.addClass("title");
