@@ -1,6 +1,8 @@
 var jeo = {};
 var globalmap;
+var default_baselayer;
 var overlayers = [];
+var overbaselayers_object = {};
 var overlayers_cartodb = [];
 var layer_name, geoserver_URL, layer_name_localization, detect_lang_site;
 detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
@@ -106,8 +108,10 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
    map.postID = conf.postID;
 
   // layers
-  var default_maplayer = conf.layers[0];
-  jeo.loadLayers(map, jeo.parse_layer(map, default_maplayer));
+  console.log("conf");
+  console.log(conf);
+  default_baselayer = conf.baselayers[0]; //conf.layers[0];
+  jeo.loadLayers(map, jeo.parse_layer(map, default_baselayer));
 
   // set bounds
   if(conf.fitBounds instanceof L.LatLngBounds)
@@ -153,11 +157,6 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
    //map.addControl(new jeo.filterLayers());
 
 
-     /*
-      * Baselayers H.E
-      */
-  /*if(map.conf.filteringLayers)
-     map.addControl(new jeo.baselayer());
   /*
    * CALLBACKS
    */
@@ -402,33 +401,25 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
             $("#post-"+ layer.ID).removeClass('loading');
             $("#post-"+ layer.ID).addClass('active');
          }
-
-
-
      }//else
+  }//end function
 
-
-
-   }//end function
-
+  
  /*
   * Utils
   */
   //Single layer
- jeo.parse_layer = function(map, layer ) { //layers changed to layer by H.E
+ jeo.parse_layer = function(map, layer ) {
     var parse_layer = jeo.create_layer_by_maptype(map, layer);
    return parse_layer;
  };//end function
 
 //this function was used for group.js
 /* jeo.parseLayers = function(map, layers) {
-
   var parsedLayers = [];
-
   $.each(layers, function(i, layer) {
     parsedLayers.push(jeo.create_layer_by_maptype(map, layer));
   });
-
   return parsedLayers;
 };*/
 
@@ -436,6 +427,7 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
     if(map.hasLayer(parsedLayers)) {
       map.removeLayer(parsedLayers);
     } else {
+      overbaselayers_object["baselayer_0"] = parsedLayers;
       map.addLayer(parsedLayers);
       //parsedLayers.addTo(map);
     }
@@ -455,13 +447,16 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
   newConf.filteringLayers.switchLayers = [];
   newConf.filteringLayers.swapLayers = [];
 
-  newConf.baseLayers = {};
-  newConf.baseLayers.switchLayers = [];
-  newConf.baseLayers.swapLayers = [];
-
+  newConf.baselayers = [];
+  $.each(conf.baselayers, function(i, layer) {
+    //if (i == 0){
+      newConf.baselayers.push(_.clone(layer));
+    //}
+  });
   $.each(conf.layers, function(i, layer) {
     if (i == 0){
       newConf.layers.push(_.clone(layer));
+    //  newConf.baselayers[0] = layer;
     }
     /*if(layer.filtering == 'switch') {
      if(detect_lang_site == "en-US"){

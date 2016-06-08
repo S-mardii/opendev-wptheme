@@ -472,13 +472,13 @@ div.cartodb-legend-stack{
     background: #fff;
 }
 .baselayer-container ul{
-  margin: 10px 8px;
+  margin: 7px 8px;
   padding: 0;
 }
 .baselayer-container li{
   display: inline-block;
   border-right: 1px solid #ddd;
-  padding-right: 5px;
+  padding: 3px 5px 3px 0;
   margin-right: 3px;
   margin: 0;
 }

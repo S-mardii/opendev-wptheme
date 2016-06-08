@@ -28,6 +28,7 @@
   }
  	function shortcode() {
     $layers = array();
+    $base_layers = array();
     $cat_baselayers = 'base-layer';
     $term_baselayers = get_term_by('slug', $cat_baselayers, 'layer-category');
     $cat_baselayers_id =  $term_baselayers->term_id;
@@ -40,38 +41,6 @@
 			</div>
 
       <?php
-          $args_base_layer = array(
-              'posts_per_page' => 5,
-              'post_type' => 'map-layer',
-              'post_status' => 'publish',
-              'tax_query' => array(
-                                  array(
-                                    'taxonomy' => 'layer-category',
-                                    'field' => 'slug',
-                                    'terms' => $cat_baselayers,
-                                    'include_children' => false
-                                  )
-                                )
-                              );
-            $base_layer_posts = get_posts( $args_base_layer );
-            if($base_layer_posts){
-                $base_layers_array = array();
-                echo '<div class="baselayer-container box-shadow"><ul class="baselayer-ul">';
-                foreach ( $base_layer_posts as $baselayer ) :
-                    setup_postdata( $baselayer ); ?>
-                    <li class="baselayer" data-layer="<?php echo $baselayer->ID; ?>"><?php echo $baselayer->post_title; ?></li>
-                    <?php
-                        if (get_post_meta($baselayer->ID, '_mapbox_id', true))
-                            $base_layers_array[$baselayer->ID] =  array("layer_url" => get_post_meta($baselayer->ID, '_mapbox_id', true));
-                        else if(get_post_meta($baselayer->ID, '_tilelayer_tile_url', true))
-                            $base_layers_array[$baselayer->ID] = array("layer_url" => get_post_meta($baselayer->ID, '_tilelayer_tile_url', true));
-
-                            $base_layers[] = $this->add_post_to_map_array($baselayer->ID);
-                endforeach;
-                echo '</ul></div>'; //baselayers
-                wp_reset_postdata();
-            }
-
       //Get cetegory and layer
           $layer_taxonomy = 'layer-category';
           $layer_term_args=array(
@@ -160,23 +129,29 @@
                   </ul><!--<ul class="categories">-->
                 </div><!--interactive-map-layers dropdown-->
             </div><!--category-map-layers  box-shadow-->
-            <?php
-         		$map = opendev_get_interactive_map_data();
-         		$map['dataReady'] = true;
-         		$map['postID'] = 'interactive_map';
-         		$map['count'] = 0;
-            $map['layers'] = $layers;
-         		$map['title'] = __('Interactive Map', 'opendev');
-            if($map['base_layer']) {
-         			array_unshift($map['layers'], array(
-         				'type' => 'tilelayer',
-         				'tile_url' => $map['base_layer']['url']
-         			));
-         		}
+              <?php
+           		$map = opendev_get_interactive_map_data();
+           		$map['dataReady'] = true;
+           		$map['postID'] = 'interactive_map';
+           		$map['count'] = 0;
+              $map['layers'] = $layers;
+           		$map['title'] = __('Interactive Map', 'opendev');
+              if($map['base_layer']) {
+           			  /*array_unshift($map['baselayers'], array(
+             				'type' => 'tilelayer',
+             				'tile_url' => $map['base_layer']['url']
+               			)
+                  );*/
+                  $base_layers[0] = array(
+             				'ID' => '0',
+             				'type' => 'tilelayer',
+             				'tile_url' => $map['base_layer']['url']
+                  );
+           		}
 
-            $map['baselayers'] = $base_layers;
+              $map['baselayers'] = $base_layers;
           }//if terms_layer
-      ?>
+          ?>
       <!--<div class="category-map-layers box-shadow hide_show_container">
             <h2 class="sidebar_header widget_headline"><?php _e("Map Layers", "opendev"); ?>
              <i class='fa fa-caret-down hide_show_icon'></i>
@@ -190,63 +165,63 @@
      </div><!- -category-map-layers-->
    </div><!-- interactive-map" -->
 
-     <div class="box-shadow map-legend-container hide_show_container">
-       <h2 class="widget_headline"><?php _e("LEGEND", "opendev"); ?> <i class='fa fa-caret-down hide_show_icon'></i></h2>
-       <div class="map-legend dropdown">
-          <hr class="color-line" />
-         <ul class="map-legend-ul">
-         </ul>
-       </div>
-     </div><!--map-legend-container-->
+   <div class="box-shadow map-legend-container hide_show_container">
+     <h2 class="widget_headline"><?php _e("LEGEND", "opendev"); ?> <i class='fa fa-caret-down hide_show_icon'></i></h2>
+     <div class="map-legend dropdown">
+        <hr class="color-line" />
+       <ul class="map-legend-ul">
+       </ul>
+     </div>
+   </div><!--map-legend-container-->
 
-     <div class="box-shadow layer-toggle-info-container layer-right-screen">
-       <div class="toggle-close-icon"><i class="fa fa-times"></i></div>
+   <div class="box-shadow layer-toggle-info-container layer-right-screen">
+     <div class="toggle-close-icon"><i class="fa fa-times"></i></div>
+      <?php
+      foreach($layers as $individual_layer){
+          $get_post_by_id = get_post($individual_layer["ID"]);
+          if ( (CURRENT_LANGUAGE != "en") ){
+             $get_download_url = str_replace("?type=dataset", "", get_post_meta($get_post_by_id->ID, '_layer_download_link_localization', true));
+          }else {
+             $get_download_url = str_replace("?type=dataset", "", get_post_meta($get_post_by_id->ID, '_layer_download_link', true));
+          }
+
+          // get post content if has
+          if (function_exists( qtrans_use)){
+            $get_post_content_by_id = qtrans_use(CURRENT_LANGUAGE, $get_post_by_id->post_content,false);
+          }else{
+            $get_post_content_by_id = $get_post_by_id->post_conten;
+          }
+            if($get_download_url!="" ){
+                  $ckan_dataset_id_exploded_by_dataset = explode("/dataset/", $get_download_url);
+                  $ckan_dataset_id = $ckan_dataset_id_exploded_by_dataset[1];
+                  $ckan_domain = $ckan_dataset_id_exploded_by_dataset[0];
+                  // get ckan record by id
+                  $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
+                  $showing_fields = array(
+                                      //  "title_translated" => "Title",
+                                        "notes_translated" => "Description",
+                                        "odm_source" => "Source(s)",
+                                        "odm_date_created" => "Date of data",
+                                        "odm_completeness" => "Completeness",
+                                        "license_id" => "License"
+                                    );
+
+                  get_metadata_info_of_dataset_by_id(CKAN_DOMAIN, $ckan_dataset_id, $get_post_by_id, 1,  $showing_fields);
+            } else if($get_post_content_by_id){ ?>
+                  <div class="layer-toggle-info toggle-info-<?php echo $individual_layer['ID']; ?>">
+                      <div class="layer-toggle-info-content">
+                          <h4><?php echo get_the_title($individual_layer['ID']); ?></h4>
+                          <?php echo $get_post_content_by_id ?>
+                          <?php //echo $individual_layer['excerpt']; ?>
+                      </div>
+                  </div>
+            <?php
+            }
+            ?>
         <?php
-        foreach($layers as $individual_layer){
-            $get_post_by_id = get_post($individual_layer["ID"]);
-            if ( (CURRENT_LANGUAGE != "en") ){
-               $get_download_url = str_replace("?type=dataset", "", get_post_meta($get_post_by_id->ID, '_layer_download_link_localization', true));
-            }else {
-               $get_download_url = str_replace("?type=dataset", "", get_post_meta($get_post_by_id->ID, '_layer_download_link', true));
-            }
-
-            // get post content if has
-            if (function_exists( qtrans_use)){
-              $get_post_content_by_id = qtrans_use(CURRENT_LANGUAGE, $get_post_by_id->post_content,false);
-            }else{
-              $get_post_content_by_id = $get_post_by_id->post_conten;
-            }
-              if($get_download_url!="" ){
-                    $ckan_dataset_id_exploded_by_dataset = explode("/dataset/", $get_download_url);
-                    $ckan_dataset_id = $ckan_dataset_id_exploded_by_dataset[1];
-                    $ckan_domain = $ckan_dataset_id_exploded_by_dataset[0];
-                    // get ckan record by id
-                    $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
-                    $showing_fields = array(
-                                        //  "title_translated" => "Title",
-                                          "notes_translated" => "Description",
-                                          "odm_source" => "Source(s)",
-                                          "odm_date_created" => "Date of data",
-                                          "odm_completeness" => "Completeness",
-                                          "license_id" => "License"
-                                      );
-
-                    get_metadata_info_of_dataset_by_id(CKAN_DOMAIN, $ckan_dataset_id, $get_post_by_id, 1,  $showing_fields);
-              } else if($get_post_content_by_id){ ?>
-                    <div class="layer-toggle-info toggle-info-<?php echo $individual_layer['ID']; ?>">
-                        <div class="layer-toggle-info-content">
-                            <h4><?php echo get_the_title($individual_layer['ID']); ?></h4>
-                            <?php echo $get_post_content_by_id ?>
-                            <?php //echo $individual_layer['excerpt']; ?>
-                        </div>
-                    </div>
-              <?php
-              }
-              ?>
-          <?php
-      }// foreach
-        ?>
-     </div><!--llayer-toggle-info-containero-->
+    }// foreach
+      ?>
+   </div><!--llayer-toggle-info-containero-->
 
 		<script type="text/javascript">
 			(function($) {
@@ -261,10 +236,13 @@
         var resize_height_map_category = window.innerHeight - $("#od-head").height() + "px";
         var resize_height_map_layer = window.innerHeight - $("#od-head").height() - 41+ "px";
         var resize_layer_toggle_info = $(".layer-toggle-info-container").height() -30 + "px";
-        var get_bottom_possition_baselayer = $(".baselayer-container").height() + 20 + "px";
-
+        if ($(".baselayer-container").height() == null){
+            var get_height_baselayer_container = $(".baselayer-container").height() + 12 + "px";
+        }else {
+            var get_height_baselayer_container = $(".baselayer-container").height() + 20 + "px";
+        }
         $(".page-template-page-map-explorer .interactive-map .map-container").css("height", resize_height_map_container);
-        $(".page-template-page-map-explorer .category-map-layers").css("top", get_bottom_possition_baselayer);
+        $(".page-template-page-map-explorer .category-map-layers").css("top", get_height_baselayer_container);
         $(".page-template-page-map-explorer .category-map-layers").css("max-height", resize_height_map_category);
         $(".page-template-page-map-explorer .interactive-map-layers").css("max-height", resize_height_map_layer);
         $(".page-template-page-map-explorer .layer-toggle-info").css("max-height", resize_layer_toggle_info);
@@ -284,7 +262,6 @@
             $(this).siblings(".layer-toggle-info").removeClass('show_it');
         });
 
-				var term_rel = <?php echo json_encode($parsed_cats); ?>;
 				jeo(jeo.parseConf(<?php echo json_encode($map); ?>));
 				jeo.mapReady(function(map) {
 					var $layers = $('.interactive-map .interactive-map-layers');
@@ -346,7 +323,6 @@
                       if ($(".map-legend-ul li").length){
                          $('.map-legend-container').slideDown('slow');
                       }
-                          //console.log("MMMMM "+ legen_li + $(this).data('layer') );
                   }//typeof get_legend != "undefined"
 
                 } //if has class active
@@ -414,13 +390,7 @@
                       $(".layer-toggle-info-container").hide();
                 });*/
 				}); //	jeo.mapReady
-        var baselayer_attr = [];
-        $(".baselayer-container").find('.baselayer').on('click', function() {
-            	var base_layer_id = $(this).data('layer');
-              var baselayer_value = <?php echo json_encode($base_layers_array) ?>;
-              var baselayer_url = baselayer_value[base_layer_id].layer_url;
-              var	mapBaselayer  = L.tileLayer(baselayer_url);
-        });
+
 
         //Hide and show on click the collapse and expend icon
         $(document).on('click',".hide_show_container h2 > .hide_show_icon, .hide_show_container h5 > .hide_show_icon", function (e) {
