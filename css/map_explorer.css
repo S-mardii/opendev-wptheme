@@ -49,8 +49,8 @@ body.page-template-page-map-explorer{overflow: hidden;}
   margin: 0;
 }
 .page-template-page-map-explorer .category-map-layers{
-  top: 12px;
-    /*bottom: 15px;*/
+    /*top: 55px;
+  bottom: 15px;*/
   position: absolute;
   z-index: 100;
   background: white;
@@ -224,10 +224,12 @@ body.page-template-page-map-explorer{overflow: hidden;}
  content:none !important;
 }
 .layer-item .layer-item-name{
-  max-width: 65%;
+  max-width: 64%;
   display: inline-table;
 }
-
+.interactive-map .interactive-map-layers .layer-item {
+  position: relative;
+}
 .interactive-map .interactive-map-layers .layer-item .list-circle-o{
   border-radius: 2rem;
   display: inline-block;
@@ -243,9 +245,24 @@ body.page-template-page-map-explorer{overflow: hidden;}
 .interactive-map .interactive-map-layers .layer-item:hover .list-circle-o{
   border: 2px solid #6393D2;
 }
+.interactive-map .interactive-map-layers .layer-item .list-loading{
+  display: none;
+  position: relative;
+  width: 16px;
+  margin-right: -17px;
+  margin-bottom: -4px;
+  margin-left: -2px;
+}
+
+.interactive-map .interactive-map-layers .loading .list-loading{
+  display: inline-block;
+}
+
+.interactive-map .interactive-map-layers .active .list-loading,
 .interactive-map .interactive-map-layers .active .list-circle-o{
   display: none;
 }
+
 .interactive-map .interactive-map-layers .active:hover .list-circle-o{
     border: none;
 }
@@ -446,6 +463,29 @@ div.cartodb-legend-stack{
 }
 
 /* Base Layers */
-.baselayer-map-url{
-  display: none;
+.baselayer-container{
+    position: absolute;
+    display: block;
+    right: 10px;
+    top: 10px;
+    z-index: 888;
+    width: 270px;
+    background: #fff;
+}
+.baselayer-container ul{
+  margin: 7px 8px;
+  padding: 0;
+}
+.baselayer-container li{
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 3px 5px 3px 0;
+  margin-right: 3px;
+  margin: 0;
+}
+.baselayer-container li:last-child{
+  border-right: 0;
+  padding-right: 0;
+  margin-right: 0;
+
 }
