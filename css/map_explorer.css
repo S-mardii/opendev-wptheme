@@ -472,15 +472,54 @@ div.cartodb-legend-stack{
     background: #fff;
 }
 .baselayer-container ul{
-  margin: 7px 8px;
+  margin: 2px;
   padding: 0;
+  float: left;
 }
 .baselayer-container li{
   display: inline-block;
-  border-right: 1px solid #ddd;
-  padding: 3px 5px 3px 0;
-  margin-right: 3px;
+  border-right: 1px solid #eee;
+  padding: 8px;
+  float: left;
   margin: 0;
+  position: relative;
+}
+.baselayer-container .baselayer:hover{
+  cursor: pointer;
+  background: #ddd;
+}
+.baselayer-container .baselayer-ul .active{
+    background: #eee;
+}
+.baselayer-container .baselayer_thumbnail{
+    display: inline-block;
+    vertical-align: middle;
+    height: 25px;
+    margin-top: -2px;
+}
+.baselayer-container .baselayer_thumbnail img{
+     width: 25px;
+     height: 25px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    border-radius:50%;
+    border: 1px solid #fff;
+}
+.baselayer-container .baselayer_description{
+    position: absolute;
+    display: none;
+    width: 265px;
+    max-height: 200px;
+    /*margin-left: -2em;*/
+    right: 0;
+    z-index: 99;
+    padding: 5px 15px 15px;
+    margin-top: 8px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
 }
 .baselayer-container li:last-child{
   border-right: 0;

@@ -106,9 +106,9 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
   map.map_id = map_id;
   if(conf.postID)
    map.postID = conf.postID;
+  // Defaul Baselayers
+  default_baselayer = conf.layers[0];
 
-  // layers 
-  default_baselayer = conf.baselayers[0]; //conf.layers[0];
   jeo.loadLayers(map, jeo.parse_layer(map, default_baselayer));
 
   // set bounds
@@ -402,7 +402,21 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
      }//else
   }//end function
 
+  jeo.toggle_baselayers = function(map, layer ) {
+        var current_layer = "baselayer_"+ layer.ID;
+        overbaselayers_object[current_layer] = jeo.parse_layer(map, layer);
+        map.addLayer( overbaselayers_object[current_layer]);
+        overbaselayers_object[current_layer].bringToBack();
+        console.log(current_layer);
+        $.each(overbaselayers_object, function(i, layer) {
+            if(map.hasLayer(layer)) {
+                if(i != current_layer){
+                  map.removeLayer(layer);
+                }
+            }
+        });
 
+  }//end function
  /*
   * Utils
   */
@@ -446,11 +460,11 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
   newConf.filteringLayers.swapLayers = [];
 
   newConf.baselayers = [];
-  $.each(conf.baselayers, function(i, layer) {
+  /*$.each(conf.baselayers, function(i, layer) {
     //if (i == 0){
       newConf.baselayers.push(_.clone(layer));
     //}
-  });
+  }); */
   $.each(conf.layers, function(i, layer) {
     if (i == 0){
       newConf.layers.push(_.clone(layer));
