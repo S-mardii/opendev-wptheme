@@ -78,6 +78,12 @@ body.page-template-page-map-explorer{overflow: hidden;}
   }
 
 /* Clearscreen */
+.jeo-clearscreen{
+  display: none;
+}
+.page-template-page-map-explorer .jeo-clearscreen{
+  display: block;
+}
 .leaflet-control .hide-all-boxes-on-map {
     background-image: url(../img/cearscreen-button.png);
     background-position: 1px 0px;
