@@ -7,6 +7,8 @@
         // parent::__construct();
         add_action('add_meta_boxes', array($this, 'add_meta_box'));
         add_action('save_post', array($this, 'layer_save'));
+
+        add_post_type_support( 'map-layer', 'thumbnail' );
     }
     /* function unregister_parent_post_type_again() {
         remove_action( 'init', 'register_post_type', 0 );
