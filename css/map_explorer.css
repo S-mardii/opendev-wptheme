@@ -489,7 +489,7 @@ div.cartodb-legend-stack{
   float: left;
   margin: 0;
   position: relative;
-  min-height: 40;
+  min-height: 22px;
 }
 .baselayer-container .baselayer:hover{
   cursor: pointer;
