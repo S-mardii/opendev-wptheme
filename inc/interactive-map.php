@@ -30,6 +30,10 @@
     $layers = array();
     $base_layers = array();
     $layers_legend = array();
+    $map = opendev_get_interactive_map_data();
+    $map['postID'] = 'interactive_map';
+    $map['count'] = 0;
+    $map['title'] = __('Interactive Map', 'opendev');
     $cat_baselayers = 'base-layer';
     $term_baselayers = get_term_by('slug', $cat_baselayers, 'layer-category');
     $cat_baselayers_id =  $term_baselayers->term_id;
@@ -42,117 +46,173 @@
 			</div>
 
       <?php
-      //Get cetegory and layer
-          $layer_taxonomy = 'layer-category';
-          $layer_term_args=array(
-            'parent' => 0,
-            'exclude' => $cat_baselayers_id //43002
-          );
-          $terms_layer = get_terms($layer_taxonomy,$layer_term_args);
-          if ($terms_layer) {
+      //Get all posts in Layer of map-category to assing to layers array for loading layer on map
+      $all_post_layers_arg =  array(
+                                  'post_type' => 'map-layer',
+                                  'posts_per_page' => -1,
+                                  'post_status' => 'publish',
+                                  'tax_query' => array(array(
+                                                        'taxonomy' => 'layer-category',
+                                                        'terms' => $cat_baselayers_id,
+                                                        'field' => 'id',
+                                                        'operator' => 'NOT IN'
+                                                  ))
+                                  );
+      $all_post_layers = new WP_Query( $all_post_layers_arg );
+
+      if($all_post_layers->have_posts() ){
+        while ( $all_post_layers->have_posts() ) : $all_post_layers->the_post();
+            $layers[get_the_ID()] = $this->add_post_to_map_array(get_the_ID());
+        endwhile;
+      }
+
+      //Add Baselayers
+      $args_base_layer = array(
+          'posts_per_page' => 5,
+          'post_type' => 'map-layer',
+          'post_status' => 'publish',
+          'tax_query' => array(
+                              array(
+                                'taxonomy' => 'layer-category',
+                                'field' => 'slug',
+                                'terms' => $cat_baselayers,
+                                'include_children' => false
+                              )
+                            )
+                          );
+        $base_layer_posts = get_posts( $args_base_layer );
+
+        if($base_layer_posts){
+            echo '<div class="baselayer-container box-shadow"><ul class="baselayer-ul">';
             ?>
-            <div class="category-map-layers box-shadow hide_show_container">
-                <h2 class="sidebar_header map_headline widget_headline"><?php _e("Map Layers", "opendev"); ?>
-                 <i class='fa fa-caret-down hide_show_icon'></i>
-                </h2>
-                <div class="interactive-map-layers dropdown">
-                  <ul class="categories">
-                  <?php
-                  foreach( $terms_layer as $term ) {
-                     $args_layer = array(
-                         'post_type' => 'map-layer',
-                         'tax_query' => array(
-                                             array(
-                                               'taxonomy' => 'layer-category',
-                                               'field' => 'id',
-                                               'terms' => $term->term_id, // Where term_id of Term 1 is "1".
-                                               'include_children' => false
-                                             )
-                                           )
-                     );
-                     $query_layer = new WP_Query( $args_layer );
-                     ?>
-                     <li class="cat-item cat-item-<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
-                         <a href="#<?php //the_permalink(); ?>"><?php echo $term->name ?></a>
-                          <?php
-                          if($query_layer->have_posts() ){
-                            echo "<ul class='cat-layers switch-layers'>";
-                            while ( $query_layer->have_posts() ) : $query_layer->the_post();
-                            ?>
-                              <li class="layer-item" data-layer="<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
-                                  <img class="list-loading" src="<?php echo get_stylesheet_directory_uri() ?>/img/loading-map.gif">
-                                  <span class="list-circle-active"></span>
-                                  <span class="list-circle-o"></span>
-                                  <span class="layer-item-name"><?php the_title(); ?></span>
-                                  <?php
-                                  if ( (CURRENT_LANGUAGE != "en") ){
-                                    $layer_legend = get_post_meta(get_the_ID(), '_layer_legend_localization', true);
-                                    $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
-                                    $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
-                                  }else {
-                                    $layer_legend = get_post_meta(get_the_ID(), '_layer_legend', true);
-                                    $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
-                                    $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
-                                  }
+              <li class="baselayer active" data-layer="0"><?php _e("Map", "opendev") ?></li>
+            <?php
+            foreach ( $base_layer_posts as $baselayer ) :
+                setup_postdata( $baselayer ); ?>
+                <li class="baselayer" data-layer="<?php echo $baselayer->ID; ?>">
+                  <?php if ( has_post_thumbnail($baselayer->ID) ) { ?>
+                            <div class="baselayer_thumbnail"><?php echo get_the_post_thumbnail( $baselayer->ID, 'thumbnail' ); ?></div>
+                  <?php } ?>
+                  <?php echo $baselayer->post_title; ?>
+                  <?php if($baselayer->post_content != ""){ ?>
+                            <div class="box-shadow baselayer_description">
+                              <div class="toggle-close-icon"><i class="fa fa-times"></i></div>
+                              <?php echo get_the_content(); ?></div>
+                  <?php } ?>
+                </li>
+                <?php
+                    if (get_post_meta($baselayer->ID, '_mapbox_id', true))
+                        $base_layers[$baselayer->ID] =  array("layer_url" => get_post_meta($baselayer->ID, '_mapbox_id', true));
+                    else if(get_post_meta($baselayer->ID, '_tilelayer_tile_url', true))
+                        $base_layers[$baselayer->ID] = array("layer_url" => get_post_meta($baselayer->ID, '_tilelayer_tile_url', true));
 
-                                  if($layer_legend!=""){
-                                      $layers_legend[get_the_ID()] = '<div class="legend">'. $layer_legend.'</div>';  ?>
-                                  <?php }
-                                  if($layer_download_link!=""){ ?>
-                                    <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
-                                    <a class="toggle-info" alt="Info" href="#"><i id="<?php the_ID(); ?>" class="fa fa-info-circle"></i></a>
-                                  <?php
-                                  }else if(get_the_content()!= ""){ ?>
-                                    <a class="toggle-info" alt="Info" href="#"><i id="<?php the_ID(); ?>" class="fa fa-info-circle"></i></a>
-                                  <?php
-                                  }
-                                  if($layer_profilepage_link!=""){ ?>
-                                    <a class="profilepage_link" href="<?php echo $layer_profilepage_link; ?>" target="_blank"><i class="fa fa-table"></i></a>
-                                  <?php } ?>
-                              </li>
-                            <?php
-                            $layers[get_the_ID()] = $this->add_post_to_map_array(get_the_ID());
-                            endwhile;
-                            echo "</ul>";
-                          } //$query_layer->have_posts
-                            $children_term = get_terms($layer_taxonomy, array('parent' => $term->term_id, 'hide_empty' => 0, 'orderby' => 'name', ) );
-                          if ( !empty($children_term) ) {
-                            echo '<ul class="children">';
-                              walk_child_category_by_post_type( $children_term, "map-layer", "", 0 );
-                            echo '</ul>';
-                          }
-                          ?>
+                        $base_layers[$baselayer->ID] = $this->add_post_to_map_array($baselayer->ID);
+            endforeach;
+            echo '</ul></div>'; //baselayers
+            wp_reset_postdata();
+        }
 
-                     </li>
-                   <?php // use reset postdata to restore orginal query
-                   wp_reset_postdata();
-                  }//foreach ?>
-                  </ul><!--<ul class="categories">-->
-                </div><!--interactive-map-layers dropdown-->
-            </div><!--category-map-layers  box-shadow-->
-              <?php
-           		$map = opendev_get_interactive_map_data();
-           		$map['dataReady'] = true;
-           		$map['postID'] = 'interactive_map';
-           		$map['count'] = 0;
-              $map['layers'] = $layers;
-           		$map['title'] = __('Interactive Map', 'opendev');
-              if($map['base_layer']) {
-           			  /*array_unshift($map['baselayers'], array(
-             				'type' => 'tilelayer',
-             				'tile_url' => $map['base_layer']['url']
-               			)
-                  );*/
-                  $base_layers[0] = array(
-             				'ID' => '0',
-             				'type' => 'tilelayer',
-             				'tile_url' => $map['base_layer']['url']
-                  );
-           		}
-
-              $map['baselayers'] = $base_layers;
-          }//if terms_layer
+        //Get cetegory and layer by cat for menu items
+        $layer_taxonomy = 'layer-category';
+        $layer_term_args=array(
+          'parent' => 0,
+          'exclude' => $cat_baselayers_id //43002
+        );
+        $terms_layer = get_terms($layer_taxonomy,$layer_term_args);
+        if ($terms_layer) {
           ?>
+          <div class="category-map-layers box-shadow hide_show_container">
+              <h2 class="sidebar_header map_headline widget_headline"><?php _e("Map Layers", "opendev"); ?>
+               <i class='fa fa-caret-down hide_show_icon'></i>
+              </h2>
+              <div class="interactive-map-layers dropdown">
+                <ul class="categories">
+                <?php
+                foreach( $terms_layer as $term ) {
+                   $args_layer = array(
+                       'post_type' => 'map-layer',
+                       'tax_query' => array(
+                                           array(
+                                             'taxonomy' => 'layer-category',
+                                             'field' => 'id',
+                                             'terms' => $term->term_id, // Where term_id of Term 1 is "1".
+                                             'include_children' => false
+                                           )
+                                         )
+                   );
+                   $query_layer = new WP_Query( $args_layer );
+                   ?>
+                   <li class="cat-item cat-item-<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
+                       <a href="#<?php //the_permalink(); ?>"><?php echo $term->name ?></a>
+                        <?php
+                        if($query_layer->have_posts() ){
+                          echo "<ul class='cat-layers switch-layers'>";
+                          while ( $query_layer->have_posts() ) : $query_layer->the_post();
+                          ?>
+                            <li class="layer-item" data-layer="<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
+                                <img class="list-loading" src="<?php echo get_stylesheet_directory_uri() ?>/img/loading-map.gif">
+                                <span class="list-circle-active"></span>
+                                <span class="list-circle-o"></span>
+                                <span class="layer-item-name"><?php the_title(); ?></span>
+                                <?php
+                                if ( (CURRENT_LANGUAGE != "en") ){
+                                  $layer_legend = get_post_meta(get_the_ID(), '_layer_legend_localization', true);
+                                  $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
+                                  $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
+                                }else {
+                                  $layer_legend = get_post_meta(get_the_ID(), '_layer_legend', true);
+                                  $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
+                                  $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
+                                }
+
+                                if($layer_legend!=""){
+                                  //echo '<div class="legend">'. $layer_legend.'</div>';
+                                    $layers_legend[get_the_ID()] = '<div class="legend">'. $layer_legend.'</div>';  ?>
+                                <?php }
+                                if($layer_download_link!=""){ ?>
+                                  <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
+                                  <a class="toggle-info" alt="Info" href="#"><i id="<?php the_ID(); ?>" class="fa fa-info-circle"></i></a>
+                                <?php
+                                }else if(get_the_content()!= ""){ ?>
+                                  <a class="toggle-info" alt="Info" href="#"><i id="<?php the_ID(); ?>" class="fa fa-info-circle"></i></a>
+                                <?php
+                                }
+                                if($layer_profilepage_link!=""){ ?>
+                                  <a class="profilepage_link" href="<?php echo $layer_profilepage_link; ?>" target="_blank"><i class="fa fa-table"></i></a>
+                                <?php } ?>
+                            </li>
+                          <?php
+                          endwhile;
+                          echo "</ul>";
+                        } //$query_layer->have_posts
+                          $children_term = get_terms($layer_taxonomy, array('parent' => $term->term_id, 'hide_empty' => 0, 'orderby' => 'name', ) );
+                        if ( !empty($children_term) ) {
+                          echo '<ul class="children">';
+                            walk_child_category_by_post_type( $children_term, "map-layer", "", 0 );
+                          echo '</ul>';
+                        }
+                        ?>
+
+                   </li>
+                 <?php // use reset postdata to restore orginal query
+                 wp_reset_postdata();
+                }//foreach ?>
+                </ul><!--<ul class="categories">-->
+              </div><!--interactive-map-layers dropdown-->
+          </div><!--category-map-layers  box-shadow-->
+          <?php
+         		$map['dataReady'] = true;
+            $map['baselayers'] = $base_layers;
+            $map['layers'] = $layers;
+            if($map['base_layer']) {
+           			array_unshift($map['layers'], array(
+           				'type' => 'tilelayer',
+           				'tile_url' => $map['base_layer']['url']
+           			));
+                $base_layers[0] = $map['layers'][0];
+            }
+        }//if terms_layer
+        ?>
       <!--<div class="category-map-layers box-shadow hide_show_container">
             <h2 class="sidebar_header widget_headline"><?php _e("Map Layers", "opendev"); ?>
              <i class='fa fa-caret-down hide_show_icon'></i>
@@ -278,10 +338,30 @@
 						return false;
 					});
 
-          var cancel = false;
+          //Baselayer switched
+          var all_baselayer_value = <?php echo json_encode($base_layers) ?>;
+          $(".baselayer-container").find('.baselayer-ul .baselayer').on( "mouseover", function(e) {
+                $(this).children(".baselayer_description").show();
+          }).on( "mouseout", function(e) {
+                $(this).children(".baselayer_description").hide();
+          });
+          $(".baselayer-container").find('.baselayer-ul .baselayer').on('click', function(e) {
+              	var base_layer_id = $(this).data('layer');
+                var target =  $( e.target );
+                if (target.is( "li" ) || target.is(".baselayer_thumbnail") ) {
+                    if(!$(this).hasClass('active')){
+                        $(".baselayer-container").find('.baselayer-ul .baselayer').removeClass("active");
+                        $(this).addClass("active");
+                        jeo.toggle_baselayers(map, all_baselayer_value[base_layer_id]);
+                    }
+                }
+          });
 
           var all_layers_value = <?php echo json_encode($layers) ?>;
+          console.log(all_layers_value);
           var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
+
+          //Layer enable/disable
 					$layers.find('.cat-layers li').on('click', function(e) {
               var target =  $( e.target );
               if (target.is( "span" ) ) {
@@ -297,7 +377,7 @@
                 }else {
                   $(this).addClass('loading');
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
-                  var get_legend = all_layers_legends[get_layer_id]; //$(this).find(".legend").html(); 
+                  var get_legend = all_layers_legends[get_layer_id]; //$(this).find(".legend").html();
                   if( typeof get_legend != "undefined"){
                       var legend_li = '<li class="hide_show_container '+$(this).data('layer')+'">'+ get_legend +'</li>';
                       $('.map-legend-ul').prepend(legend_li);
@@ -387,9 +467,7 @@
                 }//end if
 
             });
-                /*$(".layer-toggle-info-container").on( "mouseout", function(e) {
-                      $(".layer-toggle-info-container").hide();
-                });*/
+
 				}); //	jeo.mapReady
 
 
