@@ -485,10 +485,11 @@ div.cartodb-legend-stack{
 .baselayer-container li{
   display: inline-block;
   border-right: 1px solid #eee;
-  padding: 8px;
+  padding: 10px;
   float: left;
   margin: 0;
   position: relative;
+  min-height: 40;
 }
 .baselayer-container .baselayer:hover{
   cursor: pointer;
@@ -529,7 +530,6 @@ div.cartodb-legend-stack{
 }
 .baselayer-container li:last-child{
   border-right: 0;
-  padding-right: 0;
+  padding-right: 10;
   margin-right: 0;
-
 }
