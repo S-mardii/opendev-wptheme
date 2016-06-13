@@ -414,6 +414,9 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
           map.addLayer( overbaselayers_object[current_layer]);
           overbaselayers_object[current_layer].bringToBack();
         }
+        setTimeout(function() {
+          $(".baselayer-container").find('.baselayer-loading').hide();
+        }, 1000);
         //Remove all Cartodb Baselayer
         $.each(overbaselayers_cartodb, function(i, layer) {
             if(map.hasLayer(layer)) {
