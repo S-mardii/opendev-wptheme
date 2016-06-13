@@ -50,7 +50,8 @@ class OpenDev_Map_Category {
 										'Base Layers', // the term
 										'layer-category', // the taxonomy
 										array(
-												'slug' => 'base-layers')
+												'slug' => 'base-layers',
+                        'description' => 'Category for base layers')
 										);
 		}
 
