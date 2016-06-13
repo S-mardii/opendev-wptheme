@@ -515,6 +515,16 @@ div.cartodb-legend-stack{
     border-radius:50%;
     border: 1px solid #fff;
 }
+.baselayer-container .baselayer-loading{
+   display: none;
+   position: relative;
+   width: 33px;
+   margin-top: -5px;
+   display: none;
+   margin-right: -2px;
+   margin-bottom: -13px;
+   margin-left: -34px;
+}
 .baselayer-container .baselayer_description{
     position: absolute;
     display: none;

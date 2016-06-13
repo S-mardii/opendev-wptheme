@@ -34,7 +34,7 @@
     $map['postID'] = 'interactive_map';
     $map['count'] = 0;
     $map['title'] = __('Interactive Map', 'opendev');
-    $cat_baselayers = 'base-layer';
+    $cat_baselayers = 'base-layers';
     $term_baselayers = get_term_by('slug', $cat_baselayers, 'layer-category');
     $cat_baselayers_id =  $term_baselayers->term_id;
  		$categories = get_terms('layer-category');
@@ -85,13 +85,14 @@
         if($base_layer_posts){
             echo '<div class="baselayer-container box-shadow"><ul class="baselayer-ul">';
             ?>
-              <li class="baselayer active" data-layer="0"><?php _e("Map", "opendev") ?></li>
+              <!--<li class="baselayer active" data-layer="0"><?php // _e("Map", "opendev") ?></li>-->
             <?php
             foreach ( $base_layer_posts as $baselayer ) :
                 setup_postdata( $baselayer ); ?>
                 <li class="baselayer" data-layer="<?php echo $baselayer->ID; ?>">
                   <?php if ( has_post_thumbnail($baselayer->ID) ) { ?>
                             <div class="baselayer_thumbnail"><?php echo get_the_post_thumbnail( $baselayer->ID, 'thumbnail' ); ?></div>
+                            <img class="baselayer-loading" src="<?php echo get_stylesheet_directory_uri() ?>/img/loading-map.gif">
                   <?php } ?>
                   <?php echo $baselayer->post_title; ?>
                   <?php if($baselayer->post_content != ""){ ?>
@@ -128,6 +129,9 @@
               <div class="interactive-map-layers dropdown">
                 <ul class="categories">
                 <?php
+                /*// get all layers form all categories using wp_list_categories(), exclude posts in baselayer cat
+                // wp_list_categories(array('taxonomy' => 'layer-category', 'title_li' => '', 'depth'=> 2, 'exclude'=> $cat_baselayers_id)); //43002  */
+
                 foreach( $terms_layer as $term ) {
                    $args_layer = array(
                        'post_type' => 'map-layer',
@@ -213,17 +217,6 @@
             }
         }//if terms_layer
         ?>
-      <!--<div class="category-map-layers box-shadow hide_show_container">
-            <h2 class="sidebar_header widget_headline"><?php _e("Map Layers", "opendev"); ?>
-             <i class='fa fa-caret-down hide_show_icon'></i>
-            </h2>
-      			<div class="interactive-map-layers dropdown">
-      				<ul class="categories">
-      					<?php // get all layers form different categories, but not base-layer category
-                  wp_list_categories(array('taxonomy' => 'layer-category', 'title_li' => '', 'depth'=> 2, 'exclude'=> $cat_baselayers_id)); //43002 ?>
-      				</ul>
-      			</div>
-     </div><!- -category-map-layers-->
    </div><!-- interactive-map" -->
 
    <div class="box-shadow map-legend-container hide_show_container">
@@ -338,18 +331,23 @@
 						return false;
 					});
 
-          //Baselayer switched
+          //Display the information of baselayer on mouseover
           var all_baselayer_value = <?php echo json_encode($base_layers) ?>;
           $(".baselayer-container").find('.baselayer-ul .baselayer').on( "mouseover", function(e) {
                 $(this).children(".baselayer_description").show();
           }).on( "mouseout", function(e) {
                 $(this).children(".baselayer_description").hide();
           });
+          //Baselayer is switched
           $(".baselayer-container").find('.baselayer-ul .baselayer').on('click', function(e) {
               	var base_layer_id = $(this).data('layer');
                 var target =  $( e.target );
                 if (target.is( "li" ) || target.is(".baselayer_thumbnail") ) {
-                    if(!$(this).hasClass('active')){
+                    if($(this).hasClass('active')){
+                        $(this).removeClass("active");
+                        jeo.toggle_baselayers(map, all_baselayer_value[0]);
+                    }else {
+                        $(this).find('.baselayer-loading').show();
                         $(".baselayer-container").find('.baselayer-ul .baselayer').removeClass("active");
                         $(this).addClass("active");
                         jeo.toggle_baselayers(map, all_baselayer_value[base_layer_id]);
@@ -358,7 +356,6 @@
           });
 
           var all_layers_value = <?php echo json_encode($layers) ?>;
-          console.log(all_layers_value);
           var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
 
           //Layer enable/disable
