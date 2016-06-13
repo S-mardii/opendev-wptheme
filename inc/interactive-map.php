@@ -357,8 +357,7 @@
                 }
           });
 
-          var all_layers_value = <?php echo json_encode($layers) ?>;
-          console.log(all_layers_value);
+          var all_layers_value = <?php echo json_encode($layers) ?>; 
           var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
 
           //Layer enable/disable

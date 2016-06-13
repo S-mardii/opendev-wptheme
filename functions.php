@@ -1318,6 +1318,7 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
       echo "<ul class='cat-layers switch-layers'>";
       while ( $query_get_post->have_posts() ) : $query_get_post->the_post(); ?>
         <li class="layer-item" data-layer="<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
+            <img class="list-loading" src="<?php echo get_stylesheet_directory_uri() ?>/img/loading-map.gif">
             <span class="list-circle-active"></span>
             <span class="list-circle-o"></span>
             <span class="layer-item-name"><?php the_title(); ?></span>

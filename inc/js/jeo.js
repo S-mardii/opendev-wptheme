@@ -3,6 +3,7 @@ var globalmap;
 var default_baselayer;
 var overlayers = [];
 var overbaselayers_object = {};
+var overbaselayers_cartodb = {};
 var overlayers_cartodb = [];
 var layer_name, geoserver_URL, layer_name_localization, detect_lang_site;
 detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
@@ -405,9 +406,24 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
   jeo.toggle_baselayers = function(map, layer ) {
         var current_layer = "baselayer_"+ layer.ID;
         overbaselayers_object[current_layer] = jeo.parse_layer(map, layer);
-        map.addLayer( overbaselayers_object[current_layer]);
-        overbaselayers_object[current_layer].bringToBack();
-        console.log(current_layer);
+        if (layer.type == "cartodb" ){
+          overbaselayers_object[current_layer].addTo(map).on('done', function(lay) {
+             overbaselayers_cartodb[current_layer]= lay;
+          });
+        }else{
+          map.addLayer( overbaselayers_object[current_layer]);
+          overbaselayers_object[current_layer].bringToBack();
+        }
+        //Remove all Cartodb Baselayer
+        $.each(overbaselayers_cartodb, function(i, layer) {
+            if(map.hasLayer(layer)) {
+                if(i != current_layer){
+                   layer.hide();
+                }
+            }
+        });
+
+        //Remove all Tile and WMS Baselayer
         $.each(overbaselayers_object, function(i, layer) {
             if(map.hasLayer(layer)) {
                 if(i != current_layer){
