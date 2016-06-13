@@ -34,7 +34,7 @@
     $map['postID'] = 'interactive_map';
     $map['count'] = 0;
     $map['title'] = __('Interactive Map', 'opendev');
-    $cat_baselayers = 'base-layer';
+    $cat_baselayers = 'base-layers';
     $term_baselayers = get_term_by('slug', $cat_baselayers, 'layer-category');
     $cat_baselayers_id =  $term_baselayers->term_id;
  		$categories = get_terms('layer-category');
@@ -357,7 +357,7 @@
                 }
           });
 
-          var all_layers_value = <?php echo json_encode($layers) ?>; 
+          var all_layers_value = <?php echo json_encode($layers) ?>;
           var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
 
           //Layer enable/disable
