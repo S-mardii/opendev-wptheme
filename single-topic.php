@@ -66,7 +66,7 @@
 							</li>
 							<?php dynamic_sidebar('topic'); ?>
               <!-- Adding wpsparql widget if topic == Land -->
-              <?php if (in_array("Land", get_the_category())):?>
+              <?php if (in_array("land", get_the_category())):?>
                 <li class="widget">
   								<?php
                     $theme = get_option('opendev_options')['style'];
