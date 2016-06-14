@@ -51,6 +51,9 @@ require_once STYLESHEETPATH.'/inc/category-walker.php';
 // Datastore API functions
 require_once STYLESHEETPATH.'/inc/datastore_api.php';
 
+// Sparlq functions
+require_once STYLESHEETPATH.'/inc/sparql.php';
+
 $country_name = str_replace('Open Development ', '', get_bloginfo('name'));
 define('COUNTRY_NAME', strtolower($country_name));
 define('SITE_NAME', $country_name);
