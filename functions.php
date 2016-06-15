@@ -1702,7 +1702,7 @@ function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $indi
   // get ckan record by id
 
   $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
-  if($ckan_dataset_id!=""){
+  if(!empty($get_info_from_ckan)){
   ?>
     <div class="layer-toggle-info toggle-info toggle-info-<?php echo $individual_layer->ID; ?>">
         <table border="0" class="toggle-talbe">
