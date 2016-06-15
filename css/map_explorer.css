@@ -52,7 +52,7 @@ body.page-template-page-map-explorer{overflow: hidden;}
   margin: 0;
 }
 .page-template-page-map-explorer .category-map-layers{
-  top: 10px; 
+  top: 10px;
   position: absolute;
   z-index: 100;
   background: white;
@@ -538,7 +538,7 @@ div.cartodb-legend-stack{
     padding: 5px 15px 15px;
     margin-top: 27px;
     overflow-y: auto;
-    background: #eee;
+    background: #fff;
     border: 1px solid #ddd;
 }
 .baselayer-container li:last-child{
