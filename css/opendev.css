@@ -1069,7 +1069,7 @@ a.button:hover{
  .fa_slider_opendev.default .fa_slide_content div.description p a,
  .fa_slider_opendev.default .fa_slide_content div.description p a:visited {
      color: #888;
-     
+
      word-wrap: break-word;
  }
 
@@ -1862,7 +1862,8 @@ a.button:hover{
     max-width:100%;
 }
 #content #references li, #content #reference-list li{
- list-style-type: none;
+    list-style-type: none;
+    font-size: small;
 }
 /*
 .container .eight.columns{ width: 700px;}
