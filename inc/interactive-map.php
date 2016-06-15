@@ -94,7 +94,7 @@
                             <div class="baselayer_thumbnail"><?php echo get_the_post_thumbnail( $baselayer->ID, 'thumbnail' ); ?></div>
                             <img class="baselayer-loading" src="<?php echo get_stylesheet_directory_uri() ?>/img/loading-map.gif">
                   <?php } ?>
-                  <?php echo $baselayer->post_title; ?>
+                  <?php echo "<div class='baselayer_name'>".$baselayer->post_title."</div>"; ?>
                   <?php if($baselayer->post_content != ""){ ?>
                             <div class="box-shadow baselayer_description">
                               <div class="toggle-close-icon"><i class="fa fa-times"></i></div>
@@ -291,13 +291,8 @@
         var resize_height_map_category = window.innerHeight - $("#od-head").height() + "px";
         var resize_height_map_layer = window.innerHeight - $("#od-head").height() - 41+ "px";
         var resize_layer_toggle_info = $(".layer-toggle-info-container").height() -30 + "px";
-        if ($(".baselayer-container").height() == null){
-            var get_height_baselayer_container = $(".baselayer-container").height() + 12 + "px";
-        }else {
-            var get_height_baselayer_container = $(".baselayer-container").height() + 20 + "px";
-        }
+        
         $(".page-template-page-map-explorer .interactive-map .map-container").css("height", resize_height_map_container);
-        $(".page-template-page-map-explorer .category-map-layers").css("top", get_height_baselayer_container);
         $(".page-template-page-map-explorer .category-map-layers").css("max-height", resize_height_map_category);
         $(".page-template-page-map-explorer .interactive-map-layers").css("max-height", resize_height_map_layer);
         $(".page-template-page-map-explorer .layer-toggle-info").css("max-height", resize_layer_toggle_info);
@@ -343,7 +338,7 @@
           $(".baselayer-container").find('.baselayer-ul .baselayer').on('click', function(e) {
               	var base_layer_id = $(this).data('layer');
                 var target =  $( e.target );
-                if (target.is( "li" ) || target.is(".baselayer_thumbnail") ) {
+                if (target.is( "li" ) || target.is(".baselayer_thumbnail img") || target.is(".baselayer_name") ) {
                     if($(this).hasClass('active')){
                         $(this).removeClass("active");
                         jeo.toggle_baselayers(map, all_baselayer_value[0]);
