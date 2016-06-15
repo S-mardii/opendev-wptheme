@@ -299,7 +299,7 @@ body.page-template-page-map-explorer{overflow: hidden;}
   position: relative;
   top: -3px;
 }
-.interactive-map .interactive-map-layers .toggle-info i.active{ 
+.interactive-map .interactive-map-layers .toggle-info i.active{
   color: #6393D2;
 }
 .interactive-map .interactive-map-layers span:hover{
@@ -432,6 +432,7 @@ div.cartodb-legend-stack{
 }
 .layer-toggle-info table{
   margin-top: 0;
+  width: 100%;
 }
 .atlernative_links{
   display: inline-block;

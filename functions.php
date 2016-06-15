@@ -1706,7 +1706,7 @@ function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $indi
   ?>
     <div class="layer-toggle-info toggle-info toggle-info-<?php echo $individual_layer->ID; ?>">
         <table border="0" class="toggle-talbe">
-          <tr><td colspan="2"><h5><?php echo $get_info_from_ckan['title_translated'][$lang] ?></h5></td></tr>
+          <tr><td colspan="2"><h5><?php echo $get_info_from_ckan['title_translated'][$lang]!=""?  $get_info_from_ckan['title_translated'][$lang] : $individual_layer->post_title; ?></h5></td></tr>
           <?php
           if($showing_fields == ""){
             if($get_info_from_ckan){
