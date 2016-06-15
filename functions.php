@@ -1415,6 +1415,7 @@ function show_date_and_source_of_the_post(){ ?>
   </div>
   &nbsp;
   <?php
+  global $post;
   if (taxonomy_exists('news_source') && isset($post)){
       echo '<div class="news-source">';
       $terms_news_source = get_the_terms( $post->ID, 'news_source' );
