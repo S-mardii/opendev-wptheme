@@ -368,6 +368,8 @@
                 if($(this).hasClass('active')){
                     jeo.toggle_layers(map, all_layers_value[get_layer_id]);
                     var legend_li_disactive_class = "."+$(this).data('layer');
+                    $('.layer-toggle-info-container').hide();
+                    $(this).find('i.fa-info-circle').removeClass("active");
                     $('.map-legend-ul '+legend_li_disactive_class).remove().fadeOut('slow');
                     if ( !$(".map-legend-ul li").length){
                        $('.map-legend-container').hide('slow');

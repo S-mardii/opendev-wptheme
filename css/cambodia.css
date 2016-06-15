@@ -6,7 +6,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .kh select, .km select{
     font-family: "Suwannaphum", "Open Sans","Helvetica","Arial",sans-serif;
-} 
+}
 .mainNav-inner .level1 li a, #mainNav-inner .level1 li a, a#user_feedback_form,
 .fa_slider_opendev .fa_slide_content div.description p {
   font-family: "Suwannaphum", "Open Sans" !important;
@@ -114,6 +114,9 @@ tr:nth-child(2n+1) {
 }
 .interactive-map .interactive-map-layers .layer-item:hover .list-circle-o{
   border: 2px solid #97D320;
+}
+.interactive-map .interactive-map-layers .toggle-info i.active{
+  color: #97D320;
 }
 .color-line{
   border: #97D320 solid 1px;
