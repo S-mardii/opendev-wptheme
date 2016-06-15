@@ -33,12 +33,6 @@ require_once STYLESHEETPATH.'/inc/category-widget.php';
 // Category widget
 require_once STYLESHEETPATH.'/inc/odm-taxonomy-widget.php';
 
-// Related resources
-require_once STYLESHEETPATH.'/inc/related-resources-widget.php';
-
-// Query resources
-require_once STYLESHEETPATH.'/inc/query-resources-widget.php';
-
 // Related recent news
 require_once STYLESHEETPATH.'/inc/od-related-recent-news-widget.php';
 
@@ -53,6 +47,9 @@ require_once STYLESHEETPATH.'/inc/advanced-navigation.php';
 
 // Advanced nav
 require_once STYLESHEETPATH.'/inc/category-walker.php';
+
+// Datastore API functions
+require_once STYLESHEETPATH.'/inc/datastore_api.php';
 
 $country_name = str_replace('Open Development ', '', get_bloginfo('name'));
 define('COUNTRY_NAME', strtolower($country_name));
@@ -1406,7 +1403,7 @@ function show_date_and_source_of_the_post(){ ?>
   <div class="date">
      <span class="lsf">&#xE12b;</span>
        <?php
-       if (function_exists(qtrans_getLanguage)){
+       if (function_exists('qtrans_getLanguage')){
           if (qtrans_getLanguage() =="kh" || qtrans_getLanguage() =="km"){
             echo convert_date_to_kh_date(get_the_time('j.M.Y'));
           }else {
@@ -1418,7 +1415,8 @@ function show_date_and_source_of_the_post(){ ?>
   </div>
   &nbsp;
   <?php
-  if (taxonomy_exists('news_source')){
+  global $post;
+  if (taxonomy_exists('news_source') && isset($post)){
       echo '<div class="news-source">';
       $terms_news_source = get_the_terms( $post->ID, 'news_source' );
           if ( $terms_news_source && ! is_wp_error( $terms_news_source ) ) {
@@ -1657,22 +1655,6 @@ function get_datasets_filter($ckan_domain,$key,$value){
   if ($json === FALSE) return [];
   $datasets = json_decode($json, true) ?: [];
   return $datasets["result"]["results"];
-}
-
-function get_datastore_resources_filter($ckan_domain,$resource_id,$key,$value){
-  $datastore_url = $ckan_domain . "/api/3/action/datastore_search?resource_id=" . $resource_id . "&limit=1000&filters={\"" . $key . "\":\"" . $value . "\"}";
-  $json = @file_get_contents($datastore_url);
-  if ($json === FALSE) return [];
-  $profiles = json_decode($json, true) ?: [];
-  return $profiles["result"]["records"];
-}
-
-function get_datastore_resource($ckan_domain,$resource_id){
-  $datastore_url = $ckan_domain . "/api/3/action/datastore_search?resource_id=" . $resource_id . "&limit=1000";
-  $json = @file_get_contents($datastore_url);
-  if ($json === FALSE) return [];
-  $profiles = json_decode($json, true) ?: [];
-  return $profiles["result"]["records"];
 }
 
 function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $individual_layer='', $atlernative_links = 0, $showing_fields =""){
@@ -2035,6 +2017,7 @@ function convert_to_kh_number($number) {
     		else if ($num=="7"){	$kh_num =  "៧";	}
     		else if ($num=="8"){	$kh_num =  "៨";	}
     		else if ($num=="9"){	$kh_num =  "៩";	}
+    		else { $kh_num =  $num;	}
 
     	$conbine_num .= $kh_num;
     	}
