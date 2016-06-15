@@ -96,6 +96,9 @@ tr:nth-child(2n+1) {
 .interactive-map .interactive-map-layers .layer-item:hover .list-circle-o{
   border: 2px solid #F7904D;
 }
+.interactive-map .interactive-map-layers .toggle-info i.active{
+  color: #F7904D;
+}
 .color-line{
   border: #F7904D solid 1px;
   margin: 0 0 5px;
