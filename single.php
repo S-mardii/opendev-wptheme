@@ -13,7 +13,7 @@ if (function_exists('qtranxf_getLanguage')) {
     $local_language = $languages[1];
     $local_lang = '_'.$languages[1];
 } else {
-    $lang = '';
+    $lang = '';T
 }
 ?>
 	<article id="content" class="single-post">
