@@ -64,11 +64,15 @@
 							<li class="widget">
 								<?php opendev_summary(); ?>
 							</li>
-							<?php dynamic_sidebar('topic'); ?>              
+							<?php dynamic_sidebar('topic'); ?>
+
               <!-- Adding wpsparql widget if topic == Land -->
-              <?php if (in_array("land", get_the_category())):?>
-                <?php dynamic_sidebar('topic-land'); ?>
-              <?php endif; ?>
+              <?php
+              $categories = get_the_category();
+              if ("land" ==  strtolower($categories[0]->name)):
+                dynamic_sidebar('topic-land');
+              endif; ?>
+              
 							<?php if (get_group('related_link') != "" && get_group('related_link') != NULL) { ?>
                         	<li class="widget widget_opendev_related_link_widget" style="clear:left">
                                 <div>
