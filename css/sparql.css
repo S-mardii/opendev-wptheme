@@ -1,0 +1,17 @@
+.sparql_result_list{
+	border-collapse: separate;
+	border: 0;
+	margin: 0;
+}
+
+.sparql_result_list td{
+	font-size: 14px;
+}
+
+.sparql_result_list th{
+	display: none;
+}
+
+.sparql_result_list tr, .sparql_result_list tr:nth-child(2n+1){
+	background-color: #fff;
+}

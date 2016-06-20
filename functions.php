@@ -245,6 +245,7 @@ function opendev_styles(){
   wp_register_style('opendev-vietnam',  $css_base.'vietnam.css');
   wp_register_style('nav-concept',  $css_base.'nav_concept.css');
   wp_register_style('map-explorer',  $css_base.'map_explorer.css');
+  wp_register_style('sparql',  $css_base.'sparql.css');
 
   if( !is_page( array( 'map-explorer', 'maps', 'home' )) and !is_home()){
     wp_register_style('table-pages',  $css_base.'table-pages.css');
@@ -257,6 +258,7 @@ function opendev_styles(){
   wp_enqueue_style('opendev-base');
   wp_enqueue_style('nav-concept');
   wp_enqueue_style('table-pages');
+  wp_enqueue_style('sparql');
 
   if (is_page('map-explorer') || is_page('maps')|| is_home()){
     wp_enqueue_style('map-explorer');
