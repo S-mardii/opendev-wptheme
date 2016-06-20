@@ -64,16 +64,10 @@
 							<li class="widget">
 								<?php opendev_summary(); ?>
 							</li>
-							<?php dynamic_sidebar('topic'); ?>
+							<?php dynamic_sidebar('topic'); ?>              
               <!-- Adding wpsparql widget if topic == Land -->
               <?php if (in_array("land", get_the_category())):?>
-                <li class="widget">
-  								<?php
-                    $theme = get_option('opendev_options')['style'];
-                    $sparql_query = 'DISTINCT ?llr ?llrLabel ?country ?countryLabel FROM <http://drupal-test.landportal.info> WHERE { ?llr a  <http://purl.org/ontology/bibo/Document> ; <http://purl.org/dc/terms/spatial> ?country ; <http://purl.org/dc/terms/title> ?llrLabel . ?country <http://purl.org/dc/terms/identifier> ?iso3 ; <http://www.w3.org/2000/01/rdf-schema#label> ?countryLabel FILTER ( ?iso3 in "'.country_iso3($theme).'") } ORDER BY ?llr';
-                    echo do_shortcode('[wpsparql_query_endpoint query="' . $sparql_query . '"]');
-                   ?>
-  							</li>
+                <?php dynamic_sidebar('topic-land'); ?>
               <?php endif; ?>
 							<?php if (get_group('related_link') != "" && get_group('related_link') != NULL) { ?>
                         	<li class="widget widget_opendev_related_link_widget" style="clear:left">

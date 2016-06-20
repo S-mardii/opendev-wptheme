@@ -92,6 +92,12 @@ function opendev_setup_theme()
   'before_title' => '<h2 class="widget-title">',
   'after_title' => '</h2>',
  ));
+ register_sidebar(array(
+'name' => __('Land page - Land Portal wpsparql', 'jeo'),
+'id' => 'topic-land',
+'before_title' => '<h2 class="widget-title">',
+'after_title' => '</h2>',
+));
     register_sidebar(array(
   'name' => __('Mekong Storms and Floods sidebar', 'opendev'),
   'id' => 'mekong-storm-flood',
