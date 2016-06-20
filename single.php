@@ -14,6 +14,7 @@ if (function_exists('qtranxf_getLanguage')) {
     $local_lang = '_'.$languages[1];
 } else {
     $lang = '';
+    echo "ttit";
 }
 ?>
 	<article id="content" class="single-post">
