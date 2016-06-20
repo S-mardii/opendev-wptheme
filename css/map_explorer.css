@@ -21,7 +21,10 @@ body.page-template-page-map-explorer{overflow: hidden;}
     left: 0;
 }
 .page-template-page-map-explorer .interactive-map .map-container .leaflet-top{
-    top: 2px;
+    top: 40px;
+}
+.page-template-page-map-explorer .interactive-map .map-container .leaflet-top .jeo-geocode{
+    display: none;
 }
 .page-template-page-map-explorer .interactive-map .map-container .leaflet-right .wax-legends{
   display: none!important;
@@ -49,8 +52,7 @@ body.page-template-page-map-explorer{overflow: hidden;}
   margin: 0;
 }
 .page-template-page-map-explorer .category-map-layers{
-    /*top: 55px;
-  bottom: 15px;*/
+  top: 10px;
   position: absolute;
   z-index: 100;
   background: white;
@@ -299,16 +301,8 @@ body.page-template-page-map-explorer{overflow: hidden;}
   position: relative;
   top: -3px;
 }
-.interactive-map .interactive-map-layers .fa-circle-icon{
-  border-radius: 2rem;
-  display: inline-block;
-  width: 13px;
-  height: 13px;
-  border: 2px solid #000;
-  background: #fff;
-  color: #000;
-  margin: 0 0;
-  text-align: center;
+.interactive-map .interactive-map-layers .toggle-info i.active{
+  color: #6393D2;
 }
 .interactive-map .interactive-map-layers span:hover{
   /*border: 2px solid #6393D2;*/
@@ -441,6 +435,7 @@ div.cartodb-legend-stack{
 }
 .layer-toggle-info table{
   margin-top: 0;
+  width: 100%;
 }
 .atlernative_links{
   display: inline-block;
@@ -470,13 +465,14 @@ div.cartodb-legend-stack{
 
 /* Base Layers */
 .baselayer-container{
-    position: absolute;
-    display: block;
-    right: 10px;
-    top: 10px;
-    z-index: 888;
-    width: 270px;
-    background: #fff;
+  position: absolute;
+  display: block;
+  left: 10px;
+  top: 10px;
+  z-index: 888;
+  max-width: 650px;
+  max-height: 32px;
+  background: #fff;
 }
 .baselayer-container ul{
   margin: 2px;
@@ -485,8 +481,8 @@ div.cartodb-legend-stack{
 }
 .baselayer-container li{
   display: inline-block;
-  border-right: 1px solid #eee;
-  padding: 10px;
+  border-right: 1px solid #ccc;
+  padding: 3px 5px 3px 5px;
   float: left;
   margin: 0;
   position: relative;
@@ -502,12 +498,14 @@ div.cartodb-legend-stack{
 .baselayer-container .baselayer_thumbnail{
     display: inline-block;
     vertical-align: middle;
-    height: 25px;
-    margin-top: -2px;
+    height: 23px;
+    margin-top: -1px;
+    width: 28px;
+    float: left;
 }
 .baselayer-container .baselayer_thumbnail img{
-     width: 25px;
-     height: 25px;
+     width: 23px;
+     height: 23px;
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
     -ms-border-radius: 50%;
@@ -516,25 +514,30 @@ div.cartodb-legend-stack{
     border: 1px solid #fff;
 }
 .baselayer-container .baselayer-loading{
-   display: none;
-   position: relative;
-   width: 33px;
-   margin-top: -5px;
-   display: none;
-   margin-right: -2px;
-   margin-bottom: -13px;
-   margin-left: -34px;
+    display: none;
+    position: relative;
+    width: 31px;
+    margin-top: -4px;
+    display: none;
+    margin-right: -1px;
+    margin-bottom: -12px;
+    margin-left: -31px;
+    float: left;
+}
+.baselayer-container .baselayer_name{
+    float: left;
+    margin-top: 2px;
+    margin-left: 1px;
 }
 .baselayer-container .baselayer_description{
     position: absolute;
     display: none;
     width: 265px;
     max-height: 200px;
-    /*margin-left: -2em;*/
-    right: 0;
+    left: 0;
     z-index: 99;
     padding: 5px 15px 15px;
-    margin-top: 8px;
+    margin-top: 27px;
     overflow-y: auto;
     background: #fff;
     border: 1px solid #ddd;

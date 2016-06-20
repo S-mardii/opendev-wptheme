@@ -13,6 +13,22 @@ foreach($post_types as $pt) {
 }
 ?>
 
+<?php
+if (function_exists('qtranxf_getLanguage')) {
+    if (qtranxf_getLanguage() != 'en') {
+        $lang = '_'.qtranxf_getLanguage();
+    } else {
+        $lang = '';
+    }
+    //Get all languages that is available
+    $languages = qtranxf_getSortedLanguages();
+    $local_language = $languages[1];
+    $local_lang = '_'.$languages[1];
+} else {
+    $lang = '';
+}
+?>
+
 <div class="section-title main-title">
 	<div class="container">
 		<div class="twelve columns">
@@ -84,11 +100,78 @@ foreach($post_types as $pt) {
 										</div>
 									<?php } ?>
 								</header>
+                <?php
+                //translated-by-odc
+                if (function_exists('qtranxf_getLanguage')) {
+                    if ((qtranxf_getLanguage() == 'en') && (has_term('english-translated', 'language'))) { ?>
+                        <p class="translated-by-odc">
+                          <strong>
+                            <?php _e('Summary translated by ODC Team'); ?>
+                          </strong>
+                        </p>
+                    <?php
+                    }
+                    if ((qtranxf_getLanguage() == $local_language) && (has_term('khmer-translated', 'language'))) { ?>
+                        <p class="translated-by-odc">
+                            <strong>
+                              <?php _e('Summary translated by ODC Team'); ?>
+                            </strong>
+                        </p>
+                    <?php
+                    }
+                }
+                ?>
 								<section class="post-content">
 									<div class="post-excerpt">
 										<?php the_excerpt(); ?>
 									</div>
-								</section>
+                </section>
+                <aside class="actions clearfix">
+                  <a href="<?php the_permalink(); ?>"><?php _e('Read more', 'jeo'); ?></a>
+                </aside>
+                <br>
+                <div class="author-and-url">
+                  <?php
+                  //Get Author
+                  if (function_exists('get')) {
+                      if (get('author') == '' && get('author'.$lang) == '') {
+                          echo '';
+                      }else{
+                          $news_source_info = '<span class="lsf">&#xE041;</span> ';
+                          if (get('author'.$lang) != '') {
+                              $news_source_info .= get('author'.$lang).'<br />';
+                          } else {
+                              $news_source_info .= get('author').'<br />';
+                          }
+                      }
+                  }
+                  ?>
+                  <?php
+                  if (function_exists('get')) {
+                      //Get url
+                      if (get('article_link') == '' && get('article_link'.$lang) == '') {
+                        echo '';
+                      }else{
+                          if (get('article_link'.$lang) != '') {
+                              $source = get('article_link'.$lang);
+                          }else{
+                              $source = get('article_link');
+                          }
+                      }
+                      if (isset($source) && $source != '') {
+                          if (substr($source, 0, 7) != 'http://') {
+                              $news_source_info .= '<a href="http://'.$source.'" target="_blank">http://'.$source.'</a>';
+                          } else {
+                              $news_source_info .= '<a href="'.$source.'" target="_blank">'.$source.'</a>';
+                          }
+                      }
+                  }
+
+                  if (isset($news_source_info) && $news_source_info != '') {
+                      echo '<p>'.$news_source_info.'</p>';
+                  }
+                  ?>
+                </div>
 							</article>
 						</li>
 					<?php endwhile; ?>
