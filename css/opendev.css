@@ -1886,6 +1886,7 @@ a.button:hover{
 }
 #content ul li {
  list-style-type: square;
+ line-height: 150%;
 }
 #content #reference-list{
     margin-left: 0;
