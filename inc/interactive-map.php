@@ -291,7 +291,7 @@
         var resize_height_map_category = window.innerHeight - $("#od-head").height() + "px";
         var resize_height_map_layer = window.innerHeight - $("#od-head").height() - 41+ "px";
         var resize_layer_toggle_info = $(".layer-toggle-info-container").height() -30 + "px";
-        
+
         $(".page-template-page-map-explorer .interactive-map .map-container").css("height", resize_height_map_container);
         $(".page-template-page-map-explorer .category-map-layers").css("max-height", resize_height_map_category);
         $(".page-template-page-map-explorer .interactive-map-layers").css("max-height", resize_height_map_layer);
@@ -374,13 +374,14 @@
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
                   var get_legend = all_layers_legends[get_layer_id]; //$(this).find(".legend").html();
                   if( typeof get_legend != "undefined"){
-                      var legend_li = '<li class="hide_show_container '+$(this).data('layer')+'">'+ get_legend +'</li>';
+                      var legend_li = '<li class="legend-list hide_show_container '+$(this).data('layer')+'" id ='+$(this).data('layer')+'>'+ get_legend +'</li>';
+
                       $('.map-legend-ul').prepend(legend_li);
 
                       // Add class title to the legend title
                       var legend_h5 = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
                       if (legend_h5.length == 0){
-                        var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+'</h5>';
+                        var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+ ': '+get_layer_id+'</h5>';
                         $( ".map-legend-ul ."+$(this).data('layer')+" .cartodb-legend" ).prepend(h5_title);
                       }
                       var legend_h5_title = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
@@ -496,6 +497,15 @@
             }
         }); //end onclick
 
+        $( ".map-legend-ul" ).sortable({
+            stop: function (event, ui) {
+                //var layer_Id = $(ui.item).attr('id');
+               $($(".map-legend-ul > li").get().reverse()).each(function (index) {
+                    var layer_Id = $(this).attr('id');
+                    jeo.bringLayerToFront(layer_Id, index);
+                });
+            },
+        }).disableSelection();
 
 			})(jQuery);
 		</script>
