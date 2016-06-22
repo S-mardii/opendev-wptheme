@@ -344,6 +344,9 @@ body.page-template-page-map-explorer{overflow: hidden;}
     margin-bottom: 0;
     padding: 5px 0;
 }
+.map-legend-ul li:hover{ 
+  cursor: move;
+}
 .color-line{
   border: #6393D2 solid 1px;
   margin: 0 0 5px;
