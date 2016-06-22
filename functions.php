@@ -139,6 +139,7 @@ function opendev_jeo_scripts()
   global $jeo_markers;
   wp_deregister_script('jeo.markers');
   wp_register_script('jeo.markers', get_stylesheet_directory_uri().'/js/markers.js', array('jeo', 'underscore', 'twttr'), '0.3.17', true);
+
   wp_localize_script('jeo.markers', 'opendev_markers', array(
     'ajaxurl' => admin_url('admin-ajax.php'),
     'query' => $jeo_markers->query(),
@@ -179,7 +180,6 @@ function opendev_jeo_scripts()
       wp_enqueue_script('jeo.baselayer', get_stylesheet_directory_uri() . '/inc/js/baselayer.js', array('jeo'), '1.0.0');
   }
   wp_enqueue_script('opendev-mCustomScrollbar', get_stylesheet_directory_uri().'/js/jquery.mCustomScrollbar.concat.min.js', array('jquery'), '3.1.12');
- //wp_enqueue_script('opendev-interactive-map', get_stylesheet_directory_uri() . '/inc/interactive-map.js', array('jeo'));
 }
 add_action('wp_enqueue_scripts', 'opendev_jeo_scripts', 100);
 
@@ -838,9 +838,11 @@ function opendev_custom_admin_css()
   .handlers.map-setting { display: none !important; }
  </style>
  <?php
-
+  // dequeue parent script and enqueue from child theme
+  wp_dequeue_script('mapbox-metabox');
+  wp_enqueue_script('child-mapbox-metabox', get_stylesheet_directory_uri() . '/inc/js/mapbox.js', array('jquery', 'jeo', 'jquery-ui-sortable'), '0.5.1');
 }
-add_action('admin_footer', 'opendev_custom_admin_css');
+add_action('admin_footer', 'opendev_custom_admin_css', 100);
 
 function opendev_search_pre_get_posts($query)
 {
@@ -1256,16 +1258,21 @@ function list_category_by_post_type ($post_type='post', $args ='', $title = 1, $
               $('.opendev_taxonomy_widget_ul > li.cat_item ul').siblings('span').addClass("plusimage-<?php echo COUNTRY_NAME;?>");
             }
             //if parent is showed, child need to expend
-            if ($('span.<?php echo $current_cat_page; ?>').length){
-              $('span.<?php echo $current_cat_page; ?>').siblings("ul").show();
-              $('span.<?php echo $current_cat_page; ?>').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
-              $('span.<?php echo $current_cat_page; ?>').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
+            <?php
+            if ($current_cat_page != ""): ?>
+                if ($('span.<?php echo $current_cat_page; ?>').length){
+                  $('span.<?php echo $current_cat_page; ?>').siblings("ul").show();
+                  $('span.<?php echo $current_cat_page; ?>').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
+                  $('span.<?php echo $current_cat_page; ?>').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
 
-              //if child is showed, parent expended
-              $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").show();
-              $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
-              $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
-            }
+                  //if child is showed, parent expended
+                  $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").show();
+                  $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
+                  $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
+                }
+            <?php 
+            endif;
+            ?>
           });
           $('.opendev_taxonomy_widget_ul > li.cat_item span').click(function(event) {
             //event.preventDefault();
