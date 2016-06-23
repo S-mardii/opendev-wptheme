@@ -291,7 +291,7 @@
         var resize_height_map_category = window.innerHeight - $("#od-head").height() + "px";
         var resize_height_map_layer = window.innerHeight - $("#od-head").height() - 41+ "px";
         var resize_layer_toggle_info = $(".layer-toggle-info-container").height() -30 + "px";
-        
+
         $(".page-template-page-map-explorer .interactive-map .map-container").css("height", resize_height_map_container);
         $(".page-template-page-map-explorer .category-map-layers").css("max-height", resize_height_map_category);
         $(".page-template-page-map-explorer .interactive-map-layers").css("max-height", resize_height_map_layer);
@@ -312,20 +312,20 @@
             $(this).siblings(".layer-toggle-info").removeClass('show_it');
         });
 
-				jeo(jeo.parseConf(<?php echo json_encode($map); ?>));
-				jeo.mapReady(function(map) {
-					var $layers = $('.interactive-map .interactive-map-layers');
-					$layers.find('.categories ul').hide();
-					$layers.find('li.cat-item > a').on('click', function() {
-						if($(this).hasClass('active')) {
-							$(this).removeClass('active');
-							$(this).parent().find('ul').hide();
-						} else {
-							$(this).addClass('active');
-							$(this).parent().find('> ul').show();
-						}
-						return false;
-					});
+        jeo(jeo.parseConf(<?php echo json_encode($map); ?>));
+        jeo.mapReady(function(map) {
+        	var $layers = $('.interactive-map .interactive-map-layers');
+        	$layers.find('.categories ul').hide();
+        	$layers.find('li.cat-item > a').on('click', function() {
+        		if($(this).hasClass('active')) {
+        			$(this).removeClass('active');
+        			$(this).parent().find('ul').hide();
+        		} else {
+        			$(this).addClass('active');
+        			$(this).parent().find('> ul').show();
+        		}
+        		return false;
+        	});
 
           //Display the information of baselayer on mouseover
           var all_baselayer_value = <?php echo json_encode($base_layers) ?>;
@@ -353,19 +353,17 @@
 
           var all_layers_value = <?php echo json_encode($layers) ?>;
           var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
-
           //Layer enable/disable
-					$layers.find('.cat-layers li').on('click', function(e) {
+		  $layers.find('.cat-layers li').on('click', function(e) {
               var target =  $( e.target );
               if (target.is( "span" ) ) {
                 var get_layer_id = $(this).data('layer');
 
                 if($(this).hasClass('active')){
                     jeo.toggle_layers(map, all_layers_value[get_layer_id]);
-                    var legend_li_disactive_class = "."+$(this).data('layer');
                     $('.layer-toggle-info-container').hide();
                     $(this).find('i.fa-info-circle').removeClass("active");
-                    $('.map-legend-ul '+legend_li_disactive_class).remove().fadeOut('slow');
+                    $('.map-legend-ul .'+get_layer_id).remove().fadeOut('slow');
                     if ( !$(".map-legend-ul li").length){
                        $('.map-legend-container').hide('slow');
                     }
@@ -374,13 +372,14 @@
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
                   var get_legend = all_layers_legends[get_layer_id]; //$(this).find(".legend").html();
                   if( typeof get_legend != "undefined"){
-                      var legend_li = '<li class="hide_show_container '+$(this).data('layer')+'">'+ get_legend +'</li>';
+                      var legend_li = '<li class="legend-list hide_show_container '+$(this).data('layer')+'" id ='+$(this).data('layer')+'>'+ get_legend +'</li>';
+
                       $('.map-legend-ul').prepend(legend_li);
 
                       // Add class title to the legend title
                       var legend_h5 = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
                       if (legend_h5.length == 0){
-                        var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+'</h5>';
+                        var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+ '</h5>';
                         $( ".map-legend-ul ."+$(this).data('layer')+" .cartodb-legend" ).prepend(h5_title);
                       }
                       var legend_h5_title = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
@@ -393,7 +392,8 @@
                       $( ".map-legend-ul ."+$(this).data('layer')+" .dropdown").show();
 
                       // Add hide_show_icon into h5 element
-                      var hide_show_icon = "<i class='fa fa-caret-down hide_show_icon'></i>";
+                      var hide_show_icon = "<i class='fa fa-times-circle' id='"+$(this).data('layer')+"' aria-hidden='true'></i>";
+                          hide_show_icon += "<i class='fa fa-caret-down hide_show_icon'></i>";
                       legend_h5_title.prepend(hide_show_icon);
 
                       if ($(".map-legend-ul li").length){
@@ -403,9 +403,9 @@
 
                 } //if has class active
               }//if (target.is( "span" ) )
-    			}); //$layers.find('.cat-layers li')
+		  }); //$layers.find('.cat-layers li')
 
-            //Click on info icon
+          //Click on info icon
           $layers.find('.cat-layers li i.fa-info-circle').on('click', function(e) {
                 var target =  $( e.target );
                 //Get the tool tip container width adn height
@@ -465,14 +465,25 @@
                         }
                     }
 
-
-                    //console.log("documentHeight: "+documentHeight + " documentWidth: "+documentWidth + " toolTipWidth:" + toolTipWidth +" left:"+ $(this).offset().left+" top:"+$(this).offset().top +" toolTipHeight: "+toolTipHeight +" offsetHeight:"+ offsetHeight +" elementHeight:" +elementHeight);
                 }//end if
 
             });
 
-				}); //	jeo.mapReady
+            $('.hide_show_container').on( "click", '.fa-times-circle', function(e){
+              var get_layer_id = $(this).attr("ID");
+              var target = $( e.target );
+              if ( target.is( "i" ) ) { 
+                  jeo.toggle_layers(map, all_layers_value[get_layer_id]);
+                  $('.layer-toggle-info-container').hide();
+                  $("#"+get_layer_id).find('i.fa-info-circle').removeClass("active");
+                  $('.map-legend-ul .'+get_layer_id).remove().fadeOut('slow');
+                  if ( !$(".map-legend-ul li").length){
+                     $('.map-legend-container').hide('slow');
+                 }
+              }
+            });
 
+        }); //	jeo.mapReady
 
         //Hide and show on click the collapse and expend icon
         $(document).on('click',".hide_show_container h2 > .hide_show_icon, .hide_show_container h5 > .hide_show_icon", function (e) {
@@ -481,8 +492,8 @@
             var parent_of_target =  $( e.target ).parent();
             var drop = parent_of_target.siblings('.dropdown');
             //console.log(drop);
-      			target.toggleClass('fa-caret-down');
-      			target.toggleClass('fa-caret-up');
+            		target.toggleClass('fa-caret-down');
+            		target.toggleClass('fa-caret-up');
 
             if (drop.is(":hidden")) {
                 parent_of_target.removeClass("title_active")
@@ -494,7 +505,18 @@
                 drop.hide();
                 parent_of_target.removeClass("title_active");
             }
-        }); //end onclick
+          }); //end onclick
+
+        //Drag Drop to change zIndex of layers
+        $( ".map-legend-ul" ).sortable({
+            stop: function (event, ui) {
+                //var layer_Id = $(ui.item).attr('id');
+               $($(".map-legend-ul > li").get().reverse()).each(function (index) {
+                    var layer_Id = $(this).attr('id');
+                    jeo.bringLayerToFront(layer_Id, index);
+                });
+            },
+        }).disableSelection();
 
 
 			})(jQuery);
