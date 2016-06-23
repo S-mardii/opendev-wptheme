@@ -344,7 +344,7 @@ body.page-template-page-map-explorer{overflow: hidden;}
     margin-bottom: 0;
     padding: 5px 0;
 }
-.map-legend-ul li:hover{ 
+.map-legend-ul li:hover{
   cursor: move;
 }
 .color-line{
@@ -384,14 +384,31 @@ div.cartodb-legend .legend-title{
 .widget_headline .hide_show_icon{
   float: right;
   margin-right: 12px;
-  margin-top: 5px;
+  margin-top: 2px;
   cursor: pointer;
+  font-size: 16px;
 }
 .map-legend-ul .title .hide_show_icon{
   float: right;
-  margin-right: 8px;
+  margin-right: 5px;
   margin-top: 5px;
+  color: #666;
   cursor: pointer;
+  font-size: 16px;
+}
+.map-legend-ul .title .hide_show_icon:hover{
+    color: #000;
+}
+.map-legend-ul .title .fa-times-circle{
+    float: right;
+    color: #888;
+    background: #eee;
+    margin-top: 6px;
+    margin-right: 0;
+}
+.map-legend-ul .title .fa-times-circle:hover{
+    cursor: pointer;
+    color: #f03030
 }
 div.cartodb-legend-stack{
   width: 250px;

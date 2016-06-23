@@ -385,9 +385,14 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
         $("#post-"+ layer.ID).removeClass('loading');
         $("#post-"+ layer.ID).toggleClass('active');
      }else if( layer.ID in overlayers_cartodb ) {
-        overlayers_cartodb[layer.ID].toggle();
+           overlayers_cartodb[layer.ID].toggle();
            $("#post-"+ layer.ID).removeClass('loading');
            $("#post-"+ layer.ID).toggleClass('active');
+           var visible = $("#post-"+layer.ID).hasClass("active");
+           if(visible){ 
+               layer_index = layer_index + 1; //increate when the layer is actived
+               jeo.bringLayerToFront(layer.ID, layer_index);
+           }
      }else {
          layer_index = layer_index + 1; //increate when the layer is actived
             //var layer_index = $(".map-legend-ul li.legend-list").length;
@@ -404,7 +409,7 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
          }else{
             overlayers[layer.ID].addTo(map);
             //overlayers[layer.ID].bringToFront();
-            jeo.bringLayerToFront(layer.ID, layer_index); 
+            jeo.bringLayerToFront(layer.ID, layer_index);
             $("#post-"+ layer.ID).removeClass('loading');
             $("#post-"+ layer.ID).addClass('active');
          }
