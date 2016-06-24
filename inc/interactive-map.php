@@ -335,7 +335,7 @@
                 $(this).children(".baselayer_description").hide();
           });
           //Baselayer is switched
-          $(".baselayer-container").find('.baselayer-ul .baselayer').on('click', function(e) {
+          $(".baselayer-container").find('.baselayer-ul .baselayer').bind('click', function(e) {
               	var base_layer_id = $(this).data('layer');
                 var target =  $( e.target );
                 if (target.is( "li" ) || target.is(".baselayer_thumbnail img") || target.is(".baselayer_name") ) {
@@ -354,6 +354,7 @@
           var all_layers_value = <?php echo json_encode($layers) ?>;
           var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
           //Layer enable/disable
+
 		  $layers.find('.cat-layers li').on('click', function(e) {
               var target =  $( e.target );
               if (target.is( "span" ) ) {
@@ -367,6 +368,9 @@
                     if ( !$(".map-legend-ul li").length){
                        $('.map-legend-container').hide('slow');
                     }
+                }else if($(this).hasClass('loading')){
+                    console.log("still loading");
+                    return false;
                 }else {
                   $(this).addClass('loading');
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
@@ -472,7 +476,7 @@
             $('.hide_show_container').on( "click", '.fa-times-circle', function(e){
               var get_layer_id = $(this).attr("ID");
               var target = $( e.target );
-              if ( target.is( "i" ) ) { 
+              if ( target.is( "i" ) ) {
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
                   $('.layer-toggle-info-container').hide();
                   $("#"+get_layer_id).find('i.fa-info-circle').removeClass("active");
