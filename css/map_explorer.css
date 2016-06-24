@@ -356,7 +356,7 @@ body.page-template-page-map-explorer{overflow: hidden;}
 .legend, .wms-legend, .cartodb-legend {
   text-align:left !important;
   position: static !important;
-  width:98% !important;
+  width:100% !important;
   box-shadow: none !important;
   border-radius: none !important;
   border: none !important;

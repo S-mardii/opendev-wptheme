@@ -1245,7 +1245,7 @@ function list_category_by_post_type ($post_type='post', $args ='', $title = 1, $
                   $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
                   $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
                 }
-            <?php 
+            <?php
             endif;
             ?>
           });
@@ -1303,18 +1303,13 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
             <span class="layer-item-name"><?php the_title(); ?></span>
             <?php
             if ( (CURRENT_LANGUAGE != "en") ){
-              $layer_legend = get_post_meta(get_the_ID(), '_layer_legend_localization', true);
               $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
               $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
             }else {
-              $layer_legend = get_post_meta(get_the_ID(), '_layer_legend', true);
               $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
               $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
             }
-
-            if($layer_legend!=""){ ?>
-              <div class="legend"><?php echo $layer_legend; ?></div>
-            <?php }
+ 
             if($layer_download_link!=""){ ?>
               <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
             <?php }

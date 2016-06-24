@@ -62,8 +62,19 @@
 
       if($all_post_layers->have_posts() ){
         while ( $all_post_layers->have_posts() ) : $all_post_layers->the_post();
-            $layers[get_the_ID()] = $this->add_post_to_map_array(get_the_ID());
+            $post_ID = get_the_ID();
+            $layers[$post_ID] = $this->add_post_to_map_array($post_ID );
+                if ( (CURRENT_LANGUAGE != "en") ){
+                    $layer_legend = get_post_meta($post_ID , '_layer_legend_localization', true);
+                }else {
+                    $layer_legend = get_post_meta($post_ID , '_layer_legend', true);
+                }
+
+                if($layer_legend!=""){
+                    $layers_legend[$post_ID ] = '<div class="legend">'. $layer_legend.'</div>';
+                }
         endwhile;
+        wp_reset_postdata();
       }
 
       //Add Baselayers
@@ -160,19 +171,13 @@
                                 <span class="layer-item-name"><?php the_title(); ?></span>
                                 <?php
                                 if ( (CURRENT_LANGUAGE != "en") ){
-                                  $layer_legend = get_post_meta(get_the_ID(), '_layer_legend_localization', true);
                                   $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
                                   $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
                                 }else {
-                                  $layer_legend = get_post_meta(get_the_ID(), '_layer_legend', true);
                                   $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
                                   $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
                                 }
 
-                                if($layer_legend!=""){
-                                  //echo '<div class="legend">'. $layer_legend.'</div>';
-                                    $layers_legend[get_the_ID()] = '<div class="legend">'. $layer_legend.'</div>';  ?>
-                                <?php }
                                 if($layer_download_link!=""){ ?>
                                   <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
                                   <a class="toggle-info" alt="Info" href="#"><i id="<?php the_ID(); ?>" class="fa fa-info-circle"></i></a>
@@ -380,7 +385,7 @@
                       var legend_h5 = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
                       if (legend_h5.length == 0){
                         var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+ '</h5>';
-                        $( ".map-legend-ul ."+$(this).data('layer')+" .cartodb-legend" ).prepend(h5_title);
+                        $( ".map-legend-ul ."+$(this).data('layer')+" .legend").first().prepend(h5_title);
                       }
                       var legend_h5_title = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
                       legend_h5_title.addClass("title");
@@ -472,7 +477,7 @@
             $('.hide_show_container').on( "click", '.fa-times-circle', function(e){
               var get_layer_id = $(this).attr("ID");
               var target = $( e.target );
-              if ( target.is( "i" ) ) { 
+              if ( target.is( "i" ) ) {
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
                   $('.layer-toggle-info-container').hide();
                   $("#"+get_layer_id).find('i.fa-info-circle').removeClass("active");
