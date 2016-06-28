@@ -369,7 +369,8 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
    return pLayer;
   }//end function
 
-  jeo.bringLayerToFront = function(layer_ID, zIndex=0){
+  jeo.bringLayerToFront = function(layer_ID, zIndex){ 
+      zIndex = zIndex || 0;
       if( layer_ID in overlayers_cartodb ) {
           overlayers_cartodb[layer_ID].setZIndex(zIndex);
       }else if( layer_ID in overlayers ) {
@@ -389,13 +390,12 @@ detect_lang_site = document.documentElement.lang; // or  $('html').attr('lang');
            $("#post-"+ layer.ID).removeClass('loading');
            $("#post-"+ layer.ID).toggleClass('active');
            var visible = $("#post-"+layer.ID).hasClass("active");
-           if(visible){ 
+           if(visible){
                layer_index = layer_index + 1; //increate when the layer is actived
                jeo.bringLayerToFront(layer.ID, layer_index);
            }
      }else {
          layer_index = layer_index + 1; //increate when the layer is actived
-            //var layer_index = $(".map-legend-ul li.legend-list").length;
          overlayers[layer.ID] = jeo.parse_layer(map, layer);
          if (layer.type == "cartodb" ){
             overlayers[layer.ID].addTo(map).on('done', function(lay) {
