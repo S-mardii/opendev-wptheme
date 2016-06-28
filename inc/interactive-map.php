@@ -51,6 +51,8 @@
                                   'post_type' => 'map-layer',
                                   'posts_per_page' => -1,
                                   'post_status' => 'publish',
+                                  'orderby'   => 'title',
+                                  'order'   => 'ASC',
                                   'tax_query' => array(array(
                                                         'taxonomy' => 'layer-category',
                                                         'terms' => $cat_baselayers_id,
@@ -128,6 +130,8 @@
         $layer_taxonomy = 'layer-category';
         $layer_term_args=array(
           'parent' => 0,
+          'orderby'   => 'name',
+          'order'   => 'ASC',
           'exclude' => $cat_baselayers_id //43002
         );
         $terms_layer = get_terms($layer_taxonomy,$layer_term_args);
@@ -146,6 +150,8 @@
                 foreach( $terms_layer as $term ) {
                    $args_layer = array(
                        'post_type' => 'map-layer',
+                       'orderby'   => 'name',
+                       'order'   => 'asc',
                        'tax_query' => array(
                                            array(
                                              'taxonomy' => 'layer-category',
@@ -155,7 +161,7 @@
                                            )
                                          )
                    );
-                   $query_layer = new WP_Query( $args_layer );
+                   $query_layer = new WP_Query( $args_layer ); 
                    ?>
                    <li class="cat-item cat-item-<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
                        <a href="#<?php //the_permalink(); ?>"><?php echo $term->name ?></a>
