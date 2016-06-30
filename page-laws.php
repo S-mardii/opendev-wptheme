@@ -199,7 +199,30 @@ jQuery(document).ready(function($) {
     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
     order: [[ 0, 'asc' ]],
     displayLength: 25
+
+    <?php if (CURRENT_LANGUAGE == "km" || CURRENT_LANGUAGE == "kh"){?>
+      , "oLanguage": {
+        "sLengthMenu": 'បង្ហាញចំនួន​ <select>'+
+            '<option value="10">១០</option>'+
+            '<option value="25"> ២៥</option>'+
+            '<option value="50"> ៥០</option>'+
+            '<option value="-1">ទាំងអស់</option>'+
+        '</select> ក្នុងមួយទំព័រ',
+        "sZeroRecords": "ព័ត៌មានពុំអាចរកបាន",
+        "sInfo":"បង្ហាញពីទី _START_ ដល់ _END_ នៃចំនួនសរុប _TOTAL_",
+        "sInfoFiltered": "(ទាញចេញពីទិន្នន័យច្បាប់សរុបចំនួន _MAX_)",
+        "sSearch":"ស្វែងរក",
+        "oPaginate": {
+            "sFirst": "ទំព័រដំបូង",
+            "sLast": "ចុងក្រោយ",
+            "sPrevious": "មុន",
+            "sNext": "បន្ទាប់"
+            }
+        }
+    <?php } ?>
   });
+
+
 
   $("#search_all").keyup(function () {
     console.log("filtering page " + this.value);
