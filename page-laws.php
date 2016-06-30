@@ -222,8 +222,6 @@ jQuery(document).ready(function($) {
     <?php } ?>
   });
 
-
-
   $("#search_all").keyup(function () {
     console.log("filtering page " + this.value);
     oTable.fnFilterAll(this.value);
