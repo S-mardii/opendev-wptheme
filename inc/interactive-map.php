@@ -161,7 +161,7 @@
                                            )
                                          )
                    );
-                   $query_layer = new WP_Query( $args_layer ); 
+                   $query_layer = new WP_Query( $args_layer );
                    ?>
                    <li class="cat-item cat-item-<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
                        <a href="#<?php //the_permalink(); ?>"><?php echo $term->name ?></a>
@@ -261,7 +261,7 @@
                   $ckan_dataset_id = $ckan_dataset_id_exploded_by_dataset[1];
                   $ckan_domain = $ckan_dataset_id_exploded_by_dataset[0];
                   // get ckan record by id
-                  $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
+                  $get_info_from_ckan = wpckan_get_dataset_by_id($ckan_domain,$ckan_dataset_id);
                   $showing_fields = array(
                                       //  "title_translated" => "Title",
                                         "notes_translated" => "Description",

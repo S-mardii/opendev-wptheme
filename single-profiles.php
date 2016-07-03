@@ -54,11 +54,11 @@ if($ckan_dataset != ""){
   $ckan_dataset_id = $ckan_dataset_exploded_by_resource[0];
   $ckan_dataset_csv_id = $ckan_dataset_exploded_by_resource[1];
 
-  $dataset = get_dataset_by_id(CKAN_DOMAIN,$ckan_dataset_id);
+  $dataset = wpckan_get_dataset_by_id(CKAN_DOMAIN,$ckan_dataset_id);
   if (!IsNullOrEmptyString($filter_map_id)){
-    $profile = get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_csv_id,"map_id",$filter_map_id)[0];
+    $profile = wpckan_get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_csv_id,"map_id",$filter_map_id)[0];
   }else{
-    $profiles = get_datastore_resource(CKAN_DOMAIN,$ckan_dataset_csv_id);
+    $profiles = wpckan_get_datastore_resource(CKAN_DOMAIN,$ckan_dataset_csv_id);
   }
 }
   //for tracking
@@ -68,7 +68,7 @@ if($ckan_dataset_tracking != ""){
     $ckan_dataset_tracking_id = $ckan_dataset_tracking_exploded_by_resource[0];
     $ckan_dataset_tracking_csv_id = $ckan_dataset_tracking_exploded_by_resource[1];
     if (!IsNullOrEmptyString($filter_map_id)){
-      $ammendements = get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_tracking_csv_id,"map_id",$filter_map_id);
+      $ammendements = wpckan_get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_tracking_csv_id,"map_id",$filter_map_id);
     }
 }
   //For Attributes
@@ -705,7 +705,7 @@ function list_reference_documents($ref_docs, $only_title_url =0){
           else
            $ref_doc_name = $ref_doc;
 
-          $ref_doc_metadata = get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
+          $ref_doc_metadata = wpckan_get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
           if (count($ref_doc_metadata) > 0):
             foreach ($ref_doc_metadata as $key => $metadata): ?>
                     <li><a target="_blank" href="<?php echo CKAN_DOMAIN . "/dataset/" . $metadata["name"] ?>"><?php echo getMultilingualValueOrFallback($metadata['title_translated'],$lang) ?></a>
@@ -736,7 +736,7 @@ function list_reference_documents($ref_docs, $only_title_url =0){
          else
           $ref_doc_name = $ref_doc;
 
-         $ref_doc_metadata = get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
+         $ref_doc_metadata = wpckan_get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
          if (count($ref_doc_metadata) > 0):
            foreach ($ref_doc_metadata as $key => $metadata): ?>
                <tr>
