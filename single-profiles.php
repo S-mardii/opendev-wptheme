@@ -54,11 +54,11 @@ if($ckan_dataset != ""){
   $ckan_dataset_id = $ckan_dataset_exploded_by_resource[0];
   $ckan_dataset_csv_id = $ckan_dataset_exploded_by_resource[1];
 
-  $dataset = get_dataset_by_id(CKAN_DOMAIN,$ckan_dataset_id);
+  $dataset = wpckan_get_dataset_by_id(CKAN_DOMAIN,$ckan_dataset_id);
   if (!IsNullOrEmptyString($filter_map_id)){
-    $profile = get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_csv_id,"map_id",$filter_map_id)[0];
+    $profile = wpckan_wpckan_get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_csv_id,"map_id",$filter_map_id)[0];
   }else{
-    $profiles = get_datastore_resource(CKAN_DOMAIN,$ckan_dataset_csv_id);
+    $profiles = wpckan_get_datastore_resource(CKAN_DOMAIN,$ckan_dataset_csv_id);
   }
 }
   //for tracking
@@ -68,7 +68,7 @@ if($ckan_dataset_tracking != ""){
     $ckan_dataset_tracking_id = $ckan_dataset_tracking_exploded_by_resource[0];
     $ckan_dataset_tracking_csv_id = $ckan_dataset_tracking_exploded_by_resource[1];
     if (!IsNullOrEmptyString($filter_map_id)){
-      $ammendements = get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_tracking_csv_id,"map_id",$filter_map_id);
+      $ammendements = wpckan_wpckan_get_datastore_resources_filter(CKAN_DOMAIN,$ckan_dataset_tracking_csv_id,"map_id",$filter_map_id);
     }
 }
   //For Attributes
