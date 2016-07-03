@@ -705,7 +705,7 @@ function list_reference_documents($ref_docs, $only_title_url =0){
           else
            $ref_doc_name = $ref_doc;
 
-          $ref_doc_metadata = get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
+          $ref_doc_metadata = wpckan_get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
           if (count($ref_doc_metadata) > 0):
             foreach ($ref_doc_metadata as $key => $metadata): ?>
                     <li><a target="_blank" href="<?php echo CKAN_DOMAIN . "/dataset/" . $metadata["name"] ?>"><?php echo getMultilingualValueOrFallback($metadata['title_translated'],$lang) ?></a>
@@ -736,7 +736,7 @@ function list_reference_documents($ref_docs, $only_title_url =0){
          else
           $ref_doc_name = $ref_doc;
 
-         $ref_doc_metadata = get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
+         $ref_doc_metadata = wpckan_get_datasets_filter(CKAN_DOMAIN,"extras_odm_reference_document",$ref_doc_name);
          if (count($ref_doc_metadata) > 0):
            foreach ($ref_doc_metadata as $key => $metadata): ?>
                <tr>

@@ -40,7 +40,7 @@
                     }
 
                     echo $profile_value == ""? __("Not found", "opendev"): str_replace(";", "<br/>", $profile_value);
-                    
+
                     if(in_array($key, array("data_class", "adjustment_classification", "adjustment")))
                       data_classification_definition( $profile[$key]);
                 ?>
