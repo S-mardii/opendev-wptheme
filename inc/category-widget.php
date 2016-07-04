@@ -52,7 +52,7 @@ class OpenDev_Category_Widget extends WP_Widget {
 					$tax_class .= ' hierarchical';
 				echo $args['before_widget'];
 					echo '<div class="od-tax-widget-tax-item tax-' . $taxonomy . $tax_class .'">';
-								echo $args['before_title'] . $tax->labels->name . $args['after_title'];
+								echo $args['before_title'] . __($tax->labels->name) . $args['after_title'];
 								$term_ids = implode( ',' , $post_terms );
 								//echo wp_list_categories( 'title_li=&echo=0&taxonomy=' . $taxonomy . '&include=' . $term_ids );
 								list_category_by_post_type($post_type, $args_term, 0, 0);
