@@ -339,7 +339,7 @@ $ref_docs_tracking = array();
                         }else if($key == "issuedate"){?>
                             <td><div class="td-value"><?php
                                 $issuedate = str_replace("T00:00:00", "", $profile[$key]);
-                              echo $profile[$key] == ""? __("Not found", "opendev"): str_replace(";", "<br/>", trim($issuedate));
+                                echo $profile[$key] == ""? __("Not found", "opendev"): str_replace(";", "<br/>", trim($issuedate));
                               ?></div>
                             </td>
                           <?php
@@ -358,23 +358,23 @@ $ref_docs_tracking = array();
                             $profile_val = $profile[$key];
                             if(CURRENT_LANGUAGE =="km"){
                                 if (is_numeric($profile_val)) {
-                                        $profile_value = convert_to_kh_number(str_replace(".00", "", number_format($profile_val, 2, '.', ',')));
+                                    $profile_value = convert_to_kh_number(str_replace(".00", "", number_format($profile_val, 2, '.', ',')));
                                 }elseif( strpos($profile[$key], 'T00:00:00') !== false ) {
                                     $profile_date = str_replace("T00:00:00", "", $profile[$key]);
                                     $profile_value =  convert_date_to_kh_date(date("d/m/Y", strtotime($profile_date)), "/");
                                 }else if(in_array($key, $field_names_no_need_comma)) {
-                                      $profile_value = convert_to_kh_number($profile[$key]);
+                                    $profile_value = convert_to_kh_number($profile[$key]);
                                 }else{
                                     $profile_value = str_replace("__"," ", $profile_val);
                                 }
                             }else{
                                 if (is_numeric($profile_val)) {
-                                  $profile_value = str_replace(".00", "", number_format($profile_val, 2, '.', ','));
+                                    $profile_value = str_replace(".00", "", number_format($profile_val, 2, '.', ','));
                                 }elseif( strpos($profile[$key], 'T00:00:00') !== false ) {
                                     $profile_date = str_replace("T00:00:00", "", $profile[$key]);
                                     $profile_value =  date("d F Y", strtotime($profile_date));
                                 }elseif(in_array($key, $field_names_no_need_comma)) {
-                                      $profile_value = str_replace(",", "",  $profile[$key]);
+                                    $profile_value = str_replace(",", "",  $profile[$key]);
                                 }else{
                                     $profile_value = str_replace("__",", ",$profile_val);
                                 }
