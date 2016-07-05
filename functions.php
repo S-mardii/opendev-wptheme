@@ -725,6 +725,16 @@ function get_the_localization_language_by_website($site=""){
     $language['Vietnam'] = "Vietnamese";
     return $language[$site_name];
 }
+function posts_for_both_and_current_languages($postID, $current_lang = "en", $taxonomy ="language"){
+    $site_language = strtolower(get_localization_language_by_language_code($current_lang));
+    $terms = get_the_terms($postID, $taxonomy);
+    if ( empty($terms) && !is_wp_error( $terms )) {
+        return true;
+    }else if (has_term( $site_language, $taxonomy, $postID )){
+        return true;
+    }
+    return false;
+}
 function opendev_wpckan_post_types()
 {
     return array('post', 'page', 'topic', 'layer');
@@ -1275,9 +1285,10 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
     $get_category_link = get_term_link( $category);
   }
   if($post_type == "map-layer"){
-    echo '<a href="' . $get_category_link. '?post_type='.$post_type.'">';
-          echo $category->name;
-    echo "</a>";
+    $cat_name = '<a href="' . $get_category_link. '?post_type='.$post_type.'">';
+    $cat_name .= $category->name;
+    $cat_name .= "</a>";
+    $count_layer_items = 0;
     $args_get_post = array(
         'post_type' => $post_type,
         'tax_query' => array(
@@ -1291,33 +1302,52 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
     );
     $query_get_post = new WP_Query( $args_get_post );
     if($query_get_post->have_posts() ){
-      echo "<ul class='cat-layers switch-layers'>";
-      while ( $query_get_post->have_posts() ) : $query_get_post->the_post(); ?>
-        <li class="layer-item" data-layer="<?php the_ID(); ?>" id="post-<?php the_ID(); ?>">
-            <img class="list-loading" src="<?php echo get_stylesheet_directory_uri() ?>/img/loading-map.gif">
-            <span class="list-circle-active"></span>
-            <span class="list-circle-o"></span>
-            <span class="layer-item-name"><?php the_title(); ?></span>
-            <?php
-            if ( (CURRENT_LANGUAGE != "en") ){
-              $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
-              $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
-            }else {
-              $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
-              $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
-            }
 
-            if($layer_download_link!=""){ ?>
-              <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
-            <?php }
-            if($layer_profilepage_link!=""){ ?>
-              <a class="toggle-info" alt="Info" href="#"><i id="<?php echo the_ID(); ?>" class="fa fa-info-circle"></i></a>
-              <a class="profilepage_link" href="<?php echo $layer_profilepage_link; ?>" target="_blank"><i class="fa fa-table"></i></a>
-            <?php } ?>
-        </li>
-      <?php endwhile;
-      echo "</ul>";
+      $cat_layer_ul = "<ul class='cat-layers switch-layers'>";
+      while ( $query_get_post->have_posts() ) : $query_get_post->the_post();
+          if(posts_for_both_and_current_languages(get_the_ID(), CURRENT_LANGUAGE)){
+            $count_layer_items++;
+            $layer_items .= '<li class="layer-item" data-layer="'.get_the_ID().'" id="post-'.get_the_ID().'">
+              <img class="list-loading" src="'. get_stylesheet_directory_uri(). '/img/loading-map.gif">
+              <span class="list-circle-active"></span>
+              <span class="list-circle-o"></span>
+              <span class="layer-item-name">'.get_the_title().'</span>';
+
+              if ( (CURRENT_LANGUAGE != "en") ){
+                $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
+                $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
+              }else {
+                $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
+                $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
+              }
+
+              if($layer_download_link!=""){
+                 $layer_items .= '
+                      <a class="download-url" href="'.$layer_download_link.'" target="_blank"><i class="fa fa-arrow-down"></i></a>
+                      <a class="toggle-info" alt="Info" href="#"><i id="'. get_the_ID().'" class="fa fa-info-circle"></i></a>';
+              }else if(get_the_content()!= ""){
+                 $layer_items .= '
+                      <a class="toggle-info" alt="Info" href="#"><i id="'. get_the_ID().'" class="fa fa-info-circle"></i></a>';
+              }
+              if($layer_profilepage_link!=""){
+                 $layer_items .= '
+                      <a class="profilepage_link" href="'. $layer_profilepage_link.'" target="_blank"><i class="fa fa-table"></i></a>';
+              }
+            $layer_items .= '</li>';
+          }
+      endwhile;
+
       wp_reset_postdata();
+      $cat_layer_close_ul = "</ul>";
+      $print_items = "";
+      if ($count_layer_items > 0){
+          $print_items .= $cat_name;
+          $print_items .= $cat_layer_ul;
+            $print_items .= $layer_items;
+          $print_items .= $cat_layer_close_ul;
+
+      }
+      return $print_items;
     } //$query_get_post->have_posts
   }else {
     echo "<span class='nochildimage-".COUNTRY_NAME.$current_page."'>";
@@ -1335,21 +1365,32 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
 }
 function walk_child_category_by_post_type( $children, $post_type, $current_cat = "") {
     if($post_type == "map-layer"){
-      foreach($children as $child){
-        $cat_children = get_categories( array('parent' => $child->term_id, 'hide_empty' => 1, 'orderby' => 'name', ) );
-        echo "<li class='cat-item cat-item-".$child->term_id."'>";
-        // Display current category
-          print_category_by_post_type($child, $post_type, $current_cat);
-        // if current category has children
-        if ( !empty($cat_children) ) {
-          // add a sublevel
-          echo "<ul class='cat-layers switch-layers'>";
-          // display the children
-            walk_child_category_by_post_type( $cat_children, $post_type, $current_cat);
-          echo "</ul>";
-        }
-        echo "</li>";
+      $cat_item_and_posts = "";
+      $count_items_of_subcat = 0;
+          foreach($children as $child){
+            $cat_children = get_categories( array('parent' => $child->term_id, 'hide_empty' => 1, 'orderby' => 'name', ) );
+            $get_cat_and_posts = print_category_by_post_type($child, $post_type, $current_cat);
+            if ($get_cat_and_posts != ""){
+                $count_items_of_subcat++;
+                $cat_item_and_posts .= "<li class='cat-item cat-item-".$child->term_id."'>";
+                    // Display current category
+                    $cat_item_and_posts .= $get_cat_and_posts;
+                    // if current category has children
+                    if ( !empty($cat_children) ) {
+                      // add a sublevel
+                      // display the children
+                        walk_child_category_by_post_type( $cat_children, $post_type, $current_cat);
+                    }
+                $cat_item_and_posts .= "</li>";
+            }
+          }//foreach
+      $print_sub_cat_and_posts = "";
+      if($count_items_of_subcat > 0){ //if sub cats have layer items and sub-cats
+          $print_sub_cat_and_posts .= '<ul class="children">';
+          $print_sub_cat_and_posts .= $cat_item_and_posts;
+          $print_sub_cat_and_posts .= '</ul>';
       }
+      return $print_sub_cat_and_posts;
     }else { //widget
         foreach($children as $child){
           // Get immediate children of current category
