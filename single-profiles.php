@@ -339,7 +339,7 @@ $ref_docs_tracking = array();
                         }else if($key == "issuedate"){?>
                             <td><div class="td-value"><?php
                                 $issuedate = str_replace("T00:00:00", "", $profile[$key]);
-                                echo $profile[$key] == ""? __("Not found", "opendev"): str_replace(";", "<br/>", trim($issuedate));
+                                echo $profile_value == ""? __("Not found", "opendev"): str_replace(";", "<br/>", __(trim($profile_value), "opendev"));
                               ?></div>
                             </td>
                           <?php
@@ -350,7 +350,7 @@ $ref_docs_tracking = array();
                                 $profile_value = $profile[$key];
                             }  ?>
                             <td><div class="td-value"><?php
-                              echo $profile_value == ""? __("Not found", "opendev"): str_replace(";", "<br/>", trim($profile_value));
+                              echo $profile_value == ""? __("Not found", "opendev"): str_replace(";", "<br/>", __(trim($profile_value), "opendev"));
                               ?></div>
                             </td>
                         <?php
@@ -382,7 +382,7 @@ $ref_docs_tracking = array();
                             $profile_value = str_replace(";", "<br/>", trim($profile_value));
                             ?>
                               <td><div class="td-value"><?php
-                                echo $profile[$key] == ""? __("Not found", "opendev"): str_replace(";", "<br/>", trim($profile_value));
+                                echo $profile[$key] == ""? __("Not found", "opendev"): str_replace(";", "<br/>", __(trim($profile_value), "opendev"));
                                 ?></div>
                               </td>
                             <?php
