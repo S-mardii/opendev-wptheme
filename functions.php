@@ -733,9 +733,9 @@ function posts_for_both_and_current_languages($postID, $current_lang = "en", $ta
     $terms = get_the_terms($postID, $taxonomy);
     if ( empty($terms) && !is_wp_error( $terms )) {
         return true;
-    }else if (has_term( "$site_language", $taxonomy, $postID )){
+    }else if (has_term( $site_language, $taxonomy, $postID )){
         return true;
-    } 
+    }
     return false;
 }
 function opendev_wpckan_post_types()
