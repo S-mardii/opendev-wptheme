@@ -6,6 +6,21 @@ Template Name: Laws page
 
 <?php
 require_once('page-laws-config.php');
+
+function get_law_datasets($ckan_domain,$filter_key,$filter_value){
+
+  $filters = array(
+    "type" => "laws_record",
+  );
+
+  if (isset($filter_key)):
+    $filters[$filter_key] = $filter_value;
+  endif;
+
+  return wpckan_get_datasets_filters($ckan_domain,$filters);
+
+}
+
 ?>
 
 <?php get_header(); ?>
@@ -23,7 +38,7 @@ require_once('page-laws-config.php');
     }
     $laws = array();
     if (!IsNullOrEmptyString($filter_odm_taxonomy)){
-      $laws = get_law_datasets($CKAN_DOMAIN,"taxonomy",$filter_odm_taxonomy);
+      $laws = get_law_datasets($CKAN_DOMAIN,"extras_taxonomy",$filter_odm_taxonomy);
     }else if (!IsNullOrEmptyString($filter_odm_document_type)){
       $laws = get_law_datasets($CKAN_DOMAIN,"odm_document_type",$filter_odm_document_type);
     }else{
@@ -92,7 +107,7 @@ require_once('page-laws-config.php');
                 <td>
                   <?php
                   if (isset($law_record['odm_promulgation_date'])){
-                      if ((qtranxf_getLanguage() == "kh") || (qtranxf_getLanguage == "km")){
+                      if (function_exists('qtranxf_getLanguage') && ((qtranxf_getLanguage() == "kh") || (qtranxf_getLanguage == "km"))){
                           echo convert_date_to_kh_date(date("d.m.Y", strtotime($law_record['odm_promulgation_date'])));
                       }else{
                         echo ($law_record['odm_promulgation_date']);

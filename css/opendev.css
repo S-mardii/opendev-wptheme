@@ -1831,11 +1831,43 @@ a.button:hover{
 .wp-feature-box{
     margin-bottom: 20px;
 }
+.wp-feature-box .list-group-links{
+  margin: 15px 0;
+}
+.wp-feature-box .list-group-links li, .wp-feature-box .wp-feature-box-link-group ul li{
+  list-style-type: none !important;
+  margin: 0
+}
 #featured-media .map-container,
 #featured-media .mapgroup-container {
  height: 100%;
 }
 
+.wp-feature-box .list-group-links li a{
+  display: block;
+  padding: 10px 5px;
+  font-size: 12px;
+  line-height: 18px;
+  border-bottom: 1px dotted rgba(255,255,255,0.3);
+  border-left: 1px dotted rgba(255,255,255,0.3);
+  border-right: 1px dotted rgba(255,255,255,0.3);
+  max-width: 300px;
+  margin: 0 auto;
+  text-decoration: none;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+}
+.wp-feature-box .list-group-links li:first-child a {
+    border-top: 1px dotted rgba(255,255,255,0.3);
+}
+.wp-feature-box .list-group-links li a:hover{
+	text-decoration: none;
+	background: rgba(0,0,0,0.8);
+}
+.wp-feature-box .wp-feature-box-header{
+  position: relative;
+  z-index: 5;
+}
 
 /*
  * page
@@ -1854,6 +1886,7 @@ a.button:hover{
 }
 #content ul li {
  list-style-type: square;
+ line-height: 150%;
 }
 #content #reference-list{
     margin-left: 0;

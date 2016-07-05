@@ -1,5 +1,4 @@
 <?php
-$datasets = opendev_get_related_datasets();
 $groupby = 'groups';
 if(!empty($datasets)) {
 	$grouped = array();

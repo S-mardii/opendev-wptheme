@@ -48,9 +48,6 @@ require_once STYLESHEETPATH.'/inc/advanced-navigation.php';
 // Advanced nav
 require_once STYLESHEETPATH.'/inc/category-walker.php';
 
-// Datastore API functions
-require_once STYLESHEETPATH.'/inc/datastore_api.php';
-
 $country_name = str_replace('Open Development ', '', get_bloginfo('name'));
 define('COUNTRY_NAME', strtolower($country_name));
 define('SITE_NAME', $country_name);
@@ -89,6 +86,12 @@ function opendev_setup_theme()
   'before_title' => '<h2 class="widget-title">',
   'after_title' => '</h2>',
  ));
+ register_sidebar(array(
+'name' => __('Land page - Land Portal wpsparql', 'jeo'),
+'id' => 'topic-land',
+'before_title' => '<h2 class="widget-title">',
+'after_title' => '</h2>',
+));
     register_sidebar(array(
   'name' => __('Mekong Storms and Floods sidebar', 'opendev'),
   'id' => 'mekong-storm-flood',
@@ -139,6 +142,7 @@ function opendev_jeo_scripts()
   global $jeo_markers;
   wp_deregister_script('jeo.markers');
   wp_register_script('jeo.markers', get_stylesheet_directory_uri().'/js/markers.js', array('jeo', 'underscore', 'twttr'), '0.3.17', true);
+
   wp_localize_script('jeo.markers', 'opendev_markers', array(
     'ajaxurl' => admin_url('admin-ajax.php'),
     'query' => $jeo_markers->query(),
@@ -179,7 +183,6 @@ function opendev_jeo_scripts()
       wp_enqueue_script('jeo.baselayer', get_stylesheet_directory_uri() . '/inc/js/baselayer.js', array('jeo'), '1.0.0');
   }
   wp_enqueue_script('opendev-mCustomScrollbar', get_stylesheet_directory_uri().'/js/jquery.mCustomScrollbar.concat.min.js', array('jquery'), '3.1.12');
- //wp_enqueue_script('opendev-interactive-map', get_stylesheet_directory_uri() . '/inc/interactive-map.js', array('jeo'));
 }
 add_action('wp_enqueue_scripts', 'opendev_jeo_scripts', 100);
 
@@ -239,6 +242,7 @@ function opendev_styles(){
   wp_register_style('opendev-vietnam',  $css_base.'vietnam.css');
   wp_register_style('nav-concept',  $css_base.'nav_concept.css');
   wp_register_style('map-explorer',  $css_base.'map_explorer.css');
+  wp_register_style('sparql',  $css_base.'sparql.css');
 
   if( !is_page( array( 'map-explorer', 'maps', 'home' )) and !is_home()){
     wp_register_style('table-pages',  $css_base.'table-pages.css');
@@ -251,6 +255,7 @@ function opendev_styles(){
   wp_enqueue_style('opendev-base');
   wp_enqueue_style('nav-concept');
   wp_enqueue_style('table-pages');
+  wp_enqueue_style('sparql');
 
   if (is_page('map-explorer') || is_page('maps')|| is_home()){
     wp_enqueue_style('map-explorer');
@@ -733,39 +738,6 @@ if (!function_exists('IsNullOrEmptyString')) {
     }
 }
 
-function opendev_get_related_datasets($atts = false)
-{
-    if (!$atts) {
-        $atts = array();
-    }
-
-    if (!isset($atts['post_id'])) {
-        $atts['post_id'] = get_the_ID();
-    }
-
-    $related_datasets_json = get_post_meta($atts['post_id'], 'wpckan_related_datasets', true);
-    $related_datasets = array();
-    if (!IsNullOrEmptyString($related_datasets_json)) {
-        $related_datasets = json_decode($related_datasets_json, true);
-    }
-
-    $dataset_array = array();
-
-    foreach ($related_datasets as $dataset) {
-        $dataset_atts = array('id' => $dataset['dataset_id']);
-        try {
-            array_push($dataset_array, wpckan_api_get_dataset($dataset_atts));
-        } catch (Exception $e) {
-            wpckan_log($e->getMessage());
-        }
-        if (array_key_exists('limit', $atts) && (count($dataset_array) >= (int) ($atts['limit']))) {
-            break;
-        }
-    }
-
-    return $dataset_array;
-}
-
 function opendev_wpckan_api_query_datasets($atts)
 {
     if (is_null(wpckan_get_ckan_settings())) {
@@ -838,9 +810,11 @@ function opendev_custom_admin_css()
   .handlers.map-setting { display: none !important; }
  </style>
  <?php
-
+  // dequeue parent script and enqueue from child theme
+  wp_dequeue_script('mapbox-metabox');
+  wp_enqueue_script('child-mapbox-metabox', get_stylesheet_directory_uri() . '/inc/js/mapbox.js', array('jquery', 'jeo', 'jquery-ui-sortable'), '0.5.1');
 }
-add_action('admin_footer', 'opendev_custom_admin_css');
+add_action('admin_footer', 'opendev_custom_admin_css', 100);
 
 function opendev_search_pre_get_posts($query)
 {
@@ -1256,16 +1230,21 @@ function list_category_by_post_type ($post_type='post', $args ='', $title = 1, $
               $('.opendev_taxonomy_widget_ul > li.cat_item ul').siblings('span').addClass("plusimage-<?php echo COUNTRY_NAME;?>");
             }
             //if parent is showed, child need to expend
-            if ($('span.<?php echo $current_cat_page; ?>').length){
-              $('span.<?php echo $current_cat_page; ?>').siblings("ul").show();
-              $('span.<?php echo $current_cat_page; ?>').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
-              $('span.<?php echo $current_cat_page; ?>').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
+            <?php
+            if ($current_cat_page != ""): ?>
+                if ($('span.<?php echo $current_cat_page; ?>').length){
+                  $('span.<?php echo $current_cat_page; ?>').siblings("ul").show();
+                  $('span.<?php echo $current_cat_page; ?>').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
+                  $('span.<?php echo $current_cat_page; ?>').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
 
-              //if child is showed, parent expended
-              $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").show();
-              $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
-              $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
-            }
+                  //if child is showed, parent expended
+                  $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").show();
+                  $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('minusimage-<?php echo COUNTRY_NAME;?>');
+                  $('span.<?php echo $current_cat_page; ?>').parents("li").parents("ul").siblings('span').toggleClass('plusimage-<?php echo COUNTRY_NAME;?>');
+                }
+            <?php
+            endif;
+            ?>
           });
           $('.opendev_taxonomy_widget_ul > li.cat_item span').click(function(event) {
             //event.preventDefault();
@@ -1321,18 +1300,13 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
             <span class="layer-item-name"><?php the_title(); ?></span>
             <?php
             if ( (CURRENT_LANGUAGE != "en") ){
-              $layer_legend = get_post_meta(get_the_ID(), '_layer_legend_localization', true);
               $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
               $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
             }else {
-              $layer_legend = get_post_meta(get_the_ID(), '_layer_legend', true);
               $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
               $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
             }
 
-            if($layer_legend!=""){ ?>
-              <div class="legend"><?php echo $layer_legend; ?></div>
-            <?php }
             if($layer_download_link!=""){ ?>
               <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
             <?php }
@@ -1594,69 +1568,6 @@ function buildTopTopicNav($lang)
 
 }
 
-function get_law_datasets($ckan_domain,$filter_key,$filter_value){
-  $ckanapi_url = $ckan_domain . "/api/3/action/package_search?q=*:*&fq=type:laws_record&rows=1000";
-  $json = @file_get_contents($ckanapi_url);
-  if ($json === FALSE) return [];
-  $result = json_decode($json, true) ?: [];
-  $datasets = $result["result"]["results"];
-  if (isset($filter_key) && isset($filter_value)){
-    foreach ($datasets as $key => $dataset){
-      if ( !isset($dataset[$filter_key])){
-        unset($datasets[$key]);
-      }else{
-        if (is_array($dataset[$filter_key])){
-          if (!in_array($filter_value,$dataset[$filter_key])){
-            unset($datasets[$key]);
-          }
-        }else if ($dataset[$filter_key] != $filter_value){
-          unset($datasets[$key]);
-        }
-      }
-    }
-  }
-  return $datasets;
-}
-
-// function get_law_datasets($filter_odm_taxonomy,$filter_odm_document_type){
-//   $shortcode = '[wpckan_query_datasets query="*:*" limit=1000 type="laws_record" include_fields_extra="taxonomy,odm_document_type,title_translated,odm_document_number,odm_promulgation_date" format="json"]';
-//   $laws_json = null;
-//
-//   try{
-//     $laws_json = do_shortcode($shortcode);
-//   } catch (Exception $e){
-//     return [];
-//   }
-//
-//   $laws = json_decode($laws_json,true);
-//   foreach ($laws["wpckan_dataset_list"] as $key => $law_record){
-//     if (!empty($filter_odm_document_type) && $law_record['wpckan_dataset_extras']['wpckan_dataset_extras-odm_document_type'] != $filter_odm_document_type){
-//       unset($laws["wpckan_dataset_list"][$key]);
-//     }
-//     if (!empty($filter_odm_taxonomy) && !in_array($filter_odm_taxonomy,$law_record['wpckan_dataset_extras']['wpckan_dataset_extras-taxonomy'])){
-//       unset($laws["wpckan_dataset_list"][$key]);
-//     }
-//   }
-//   return $laws["wpckan_dataset_list"];
-// }
-
-function get_dataset_by_id($ckan_domain,$id){
-  $ckanapi_url = $ckan_domain . "/api/3/action/package_show?id=" . $id;
-  //echo $ckanapi_url;
-  $json = @file_get_contents($ckanapi_url);
-  if ($json === FALSE) return [];
-  $datasets = json_decode($json, true) ?: [];
-  return $datasets["result"];
-}
-
-function get_datasets_filter($ckan_domain,$key,$value){
-  $ckanapi_url = $ckan_domain . "/api/3/action/package_search?fq=" . $key . ":" . $value;
-  $json = @file_get_contents($ckanapi_url);
-  if ($json === FALSE) return [];
-  $datasets = json_decode($json, true) ?: [];
-  return $datasets["result"]["results"];
-}
-
 function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $individual_layer='', $atlernative_links = 0, $showing_fields =""){
   $lang = CURRENT_LANGUAGE;
 
@@ -1683,7 +1594,7 @@ function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $indi
 
   // get ckan record by id
 
-  $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
+  $get_info_from_ckan = wpckan_get_dataset_by_id($ckan_domain,$ckan_dataset_id);
   if(!empty($get_info_from_ckan)){
   ?>
     <div class="layer-toggle-info toggle-info toggle-info-<?php echo $individual_layer->ID; ?>">

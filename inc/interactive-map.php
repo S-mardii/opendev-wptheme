@@ -51,6 +51,8 @@
                                   'post_type' => 'map-layer',
                                   'posts_per_page' => -1,
                                   'post_status' => 'publish',
+                                  'orderby'   => 'title',
+                                  'order'   => 'ASC',
                                   'tax_query' => array(array(
                                                         'taxonomy' => 'layer-category',
                                                         'terms' => $cat_baselayers_id,
@@ -62,8 +64,19 @@
 
       if($all_post_layers->have_posts() ){
         while ( $all_post_layers->have_posts() ) : $all_post_layers->the_post();
-            $layers[get_the_ID()] = $this->add_post_to_map_array(get_the_ID());
+            $post_ID = get_the_ID();
+            $layers[$post_ID] = $this->add_post_to_map_array($post_ID );
+                if ( (CURRENT_LANGUAGE != "en") ){
+                    $layer_legend = get_post_meta($post_ID , '_layer_legend_localization', true);
+                }else {
+                    $layer_legend = get_post_meta($post_ID , '_layer_legend', true);
+                }
+
+                if($layer_legend!=""){
+                    $layers_legend[$post_ID ] = '<div class="legend">'. $layer_legend.'</div>';
+                }
         endwhile;
+        wp_reset_postdata();
       }
 
       //Add Baselayers
@@ -117,6 +130,8 @@
         $layer_taxonomy = 'layer-category';
         $layer_term_args=array(
           'parent' => 0,
+          'orderby'   => 'name',
+          'order'   => 'ASC',
           'exclude' => $cat_baselayers_id //43002
         );
         $terms_layer = get_terms($layer_taxonomy,$layer_term_args);
@@ -135,6 +150,8 @@
                 foreach( $terms_layer as $term ) {
                    $args_layer = array(
                        'post_type' => 'map-layer',
+                       'orderby'   => 'name',
+                       'order'   => 'asc',
                        'tax_query' => array(
                                            array(
                                              'taxonomy' => 'layer-category',
@@ -160,19 +177,13 @@
                                 <span class="layer-item-name"><?php the_title(); ?></span>
                                 <?php
                                 if ( (CURRENT_LANGUAGE != "en") ){
-                                  $layer_legend = get_post_meta(get_the_ID(), '_layer_legend_localization', true);
                                   $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link_localization', true);
                                   $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link_localization', true);
                                 }else {
-                                  $layer_legend = get_post_meta(get_the_ID(), '_layer_legend', true);
                                   $layer_download_link = get_post_meta(get_the_ID(), '_layer_download_link', true);
                                   $layer_profilepage_link = get_post_meta(get_the_ID(), '_layer_profilepage_link', true);
                                 }
 
-                                if($layer_legend!=""){
-                                  //echo '<div class="legend">'. $layer_legend.'</div>';
-                                    $layers_legend[get_the_ID()] = '<div class="legend">'. $layer_legend.'</div>';  ?>
-                                <?php }
                                 if($layer_download_link!=""){ ?>
                                   <a class="download-url" href="<?php echo $layer_download_link; ?>" target="_blank"><i class="fa fa-arrow-down"></i></a>
                                   <a class="toggle-info" alt="Info" href="#"><i id="<?php the_ID(); ?>" class="fa fa-info-circle"></i></a>
@@ -250,7 +261,7 @@
                   $ckan_dataset_id = $ckan_dataset_id_exploded_by_dataset[1];
                   $ckan_domain = $ckan_dataset_id_exploded_by_dataset[0];
                   // get ckan record by id
-                  $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
+                  $get_info_from_ckan = wpckan_get_dataset_by_id($ckan_domain,$ckan_dataset_id);
                   $showing_fields = array(
                                       //  "title_translated" => "Title",
                                         "notes_translated" => "Description",
@@ -291,7 +302,7 @@
         var resize_height_map_category = window.innerHeight - $("#od-head").height() + "px";
         var resize_height_map_layer = window.innerHeight - $("#od-head").height() - 41+ "px";
         var resize_layer_toggle_info = $(".layer-toggle-info-container").height() -30 + "px";
-        
+
         $(".page-template-page-map-explorer .interactive-map .map-container").css("height", resize_height_map_container);
         $(".page-template-page-map-explorer .category-map-layers").css("max-height", resize_height_map_category);
         $(".page-template-page-map-explorer .interactive-map-layers").css("max-height", resize_height_map_layer);
@@ -312,20 +323,20 @@
             $(this).siblings(".layer-toggle-info").removeClass('show_it');
         });
 
-				jeo(jeo.parseConf(<?php echo json_encode($map); ?>));
-				jeo.mapReady(function(map) {
-					var $layers = $('.interactive-map .interactive-map-layers');
-					$layers.find('.categories ul').hide();
-					$layers.find('li.cat-item > a').on('click', function() {
-						if($(this).hasClass('active')) {
-							$(this).removeClass('active');
-							$(this).parent().find('ul').hide();
-						} else {
-							$(this).addClass('active');
-							$(this).parent().find('> ul').show();
-						}
-						return false;
-					});
+        jeo(jeo.parseConf(<?php echo json_encode($map); ?>));
+        jeo.mapReady(function(map) {
+        	var $layers = $('.interactive-map .interactive-map-layers');
+        	$layers.find('.categories ul').hide();
+        	$layers.find('li.cat-item > a').on('click', function() {
+        		if($(this).hasClass('active')) {
+        			$(this).removeClass('active');
+        			$(this).parent().find('ul').hide();
+        		} else {
+        			$(this).addClass('active');
+        			$(this).parent().find('> ul').show();
+        		}
+        		return false;
+        	});
 
           //Display the information of baselayer on mouseover
           var all_baselayer_value = <?php echo json_encode($base_layers) ?>;
@@ -335,7 +346,7 @@
                 $(this).children(".baselayer_description").hide();
           });
           //Baselayer is switched
-          $(".baselayer-container").find('.baselayer-ul .baselayer').on('click', function(e) {
+          $(".baselayer-container").find('.baselayer-ul .baselayer').bind('click', function(e) {
               	var base_layer_id = $(this).data('layer');
                 var target =  $( e.target );
                 if (target.is( "li" ) || target.is(".baselayer_thumbnail img") || target.is(".baselayer_name") ) {
@@ -353,35 +364,38 @@
 
           var all_layers_value = <?php echo json_encode($layers) ?>;
           var all_layers_legends = <?php echo json_encode($layers_legend) ?>;
-
           //Layer enable/disable
-					$layers.find('.cat-layers li').on('click', function(e) {
+
+		  $layers.find('.cat-layers li').on('click', function(e) {
               var target =  $( e.target );
               if (target.is( "span" ) ) {
                 var get_layer_id = $(this).data('layer');
 
                 if($(this).hasClass('active')){
                     jeo.toggle_layers(map, all_layers_value[get_layer_id]);
-                    var legend_li_disactive_class = "."+$(this).data('layer');
                     $('.layer-toggle-info-container').hide();
                     $(this).find('i.fa-info-circle').removeClass("active");
-                    $('.map-legend-ul '+legend_li_disactive_class).remove().fadeOut('slow');
+                    $('.map-legend-ul .'+get_layer_id).remove().fadeOut('slow');
                     if ( !$(".map-legend-ul li").length){
                        $('.map-legend-container').hide('slow');
                     }
+                }else if($(this).hasClass('loading')){
+                    console.log("still loading");
+                    return false;
                 }else {
                   $(this).addClass('loading');
                   jeo.toggle_layers(map, all_layers_value[get_layer_id]);
                   var get_legend = all_layers_legends[get_layer_id]; //$(this).find(".legend").html();
                   if( typeof get_legend != "undefined"){
-                      var legend_li = '<li class="hide_show_container '+$(this).data('layer')+'">'+ get_legend +'</li>';
+                      var legend_li = '<li class="legend-list hide_show_container '+$(this).data('layer')+'" id ='+$(this).data('layer')+'>'+ get_legend +'</li>';
+
                       $('.map-legend-ul').prepend(legend_li);
 
                       // Add class title to the legend title
                       var legend_h5 = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
                       if (legend_h5.length == 0){
-                        var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+'</h5>';
-                        $( ".map-legend-ul ."+$(this).data('layer')+" .cartodb-legend" ).prepend(h5_title);
+                        var h5_title = '<h5>'+ $(this).children('.layer-item-name').text()+ '</h5>';
+                        $( ".map-legend-ul ."+$(this).data('layer')+" .legend").first().prepend(h5_title);
                       }
                       var legend_h5_title = $( ".map-legend-ul ."+$(this).data('layer')+" h5" );
                       legend_h5_title.addClass("title");
@@ -393,7 +407,8 @@
                       $( ".map-legend-ul ."+$(this).data('layer')+" .dropdown").show();
 
                       // Add hide_show_icon into h5 element
-                      var hide_show_icon = "<i class='fa fa-caret-down hide_show_icon'></i>";
+                      var hide_show_icon = "<i class='fa fa-times-circle' id='"+$(this).data('layer')+"' aria-hidden='true'></i>";
+                          hide_show_icon += "<i class='fa fa-caret-down hide_show_icon'></i>";
                       legend_h5_title.prepend(hide_show_icon);
 
                       if ($(".map-legend-ul li").length){
@@ -403,9 +418,9 @@
 
                 } //if has class active
               }//if (target.is( "span" ) )
-    			}); //$layers.find('.cat-layers li')
+		  }); //$layers.find('.cat-layers li')
 
-            //Click on info icon
+          //Click on info icon
           $layers.find('.cat-layers li i.fa-info-circle').on('click', function(e) {
                 var target =  $( e.target );
                 //Get the tool tip container width adn height
@@ -465,14 +480,25 @@
                         }
                     }
 
-
-                    //console.log("documentHeight: "+documentHeight + " documentWidth: "+documentWidth + " toolTipWidth:" + toolTipWidth +" left:"+ $(this).offset().left+" top:"+$(this).offset().top +" toolTipHeight: "+toolTipHeight +" offsetHeight:"+ offsetHeight +" elementHeight:" +elementHeight);
                 }//end if
 
             });
 
-				}); //	jeo.mapReady
+            $('.hide_show_container').on( "click", '.fa-times-circle', function(e){
+              var get_layer_id = $(this).attr("ID");
+              var target = $( e.target );
+              if ( target.is( "i" ) ) {
+                  jeo.toggle_layers(map, all_layers_value[get_layer_id]);
+                  $('.layer-toggle-info-container').hide();
+                  $("#"+get_layer_id).find('i.fa-info-circle').removeClass("active");
+                  $('.map-legend-ul .'+get_layer_id).remove().fadeOut('slow');
+                  if ( !$(".map-legend-ul li").length){
+                     $('.map-legend-container').hide('slow');
+                 }
+              }
+            });
 
+        }); //	jeo.mapReady
 
         //Hide and show on click the collapse and expend icon
         $(document).on('click',".hide_show_container h2 > .hide_show_icon, .hide_show_container h5 > .hide_show_icon", function (e) {
@@ -481,8 +507,8 @@
             var parent_of_target =  $( e.target ).parent();
             var drop = parent_of_target.siblings('.dropdown');
             //console.log(drop);
-      			target.toggleClass('fa-caret-down');
-      			target.toggleClass('fa-caret-up');
+            		target.toggleClass('fa-caret-down');
+            		target.toggleClass('fa-caret-up');
 
             if (drop.is(":hidden")) {
                 parent_of_target.removeClass("title_active")
@@ -494,7 +520,18 @@
                 drop.hide();
                 parent_of_target.removeClass("title_active");
             }
-        }); //end onclick
+          }); //end onclick
+
+        //Drag Drop to change zIndex of layers
+        $( ".map-legend-ul" ).sortable({
+            stop: function (event, ui) {
+                //var layer_Id = $(ui.item).attr('id');
+               $($(".map-legend-ul > li").get().reverse()).each(function (index) {
+                    var layer_Id = $(this).attr('id');
+                    jeo.bringLayerToFront(layer_Id, index);
+                });
+            },
+        }).disableSelection();
 
 
 			})(jQuery);
