@@ -134,12 +134,12 @@ foreach($post_types as $pt) {
                       if(get('upload_document')!=""){
                         $file_name_en = substr(strrchr(get('upload_document'), '/'), 1);
                         echo '<a target="_blank" href="'.get_bloginfo("url").'/pdf-viewer/?pdf=files_mf/'.$file_name_en.'">';
-                        echo '<img src="'.get_bloginfo('stylesheet_directory').'/img/united-states.png" /> ';
+                        echo '<img src="'.get_bloginfo('stylesheet_directory').'/img/en_us.png" /> ';
                         _e ('English PDF');
                         echo '</a>';
                       }
                       else{
-                        echo '<img src="'.get_bloginfo('stylesheet_directory').'/img/united-states.png" /> ';
+                        echo '<img src="'.get_bloginfo('stylesheet_directory').'/img/en_us" /> ';
                         _e("English PDF not available");
                       }
                       echo "&nbsp; &nbsp;";

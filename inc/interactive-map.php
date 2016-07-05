@@ -162,11 +162,11 @@
                                          )
                    );
                    $query_layer = new WP_Query( $args_layer );
+
                    $layer_items = '';
                    $count_items_of_main_cat = 0;
-                   $main_category_li = '
-                    <li class="cat-item cat-item-<?php the_ID(); ?>" id="post-'.get_the_ID().'">
-                        <a href="#">'.$term->name.'</a>';
+                   $main_category_li = '<li class="cat-item cat-item-<?php the_ID(); ?>" id="post-'.get_the_ID().'"><a href="#">'.$term->name.'</a>';
+
                         if($query_layer->have_posts() ){
                            $cat_layer_ul= "<ul class='cat-layers switch-layers'>";
                            while ( $query_layer->have_posts() ) : $query_layer->the_post();
@@ -273,7 +273,7 @@
                   $ckan_dataset_id = $ckan_dataset_id_exploded_by_dataset[1];
                   $ckan_domain = $ckan_dataset_id_exploded_by_dataset[0];
                   // get ckan record by id
-                  $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
+                  $get_info_from_ckan = wpckan_get_dataset_by_id($ckan_domain,$ckan_dataset_id);
                   $showing_fields = array(
                                       //  "title_translated" => "Title",
                                         "notes_translated" => "Description",

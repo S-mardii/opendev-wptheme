@@ -6,6 +6,21 @@ Template Name: Laws page
 
 <?php
 require_once('page-laws-config.php');
+
+function get_law_datasets($ckan_domain,$filter_key,$filter_value){
+
+  $filters = array(
+    "type" => "laws_record",
+  );
+
+  if (isset($filter_key)):
+    $filters[$filter_key] = $filter_value;
+  endif;
+
+  return wpckan_get_datasets_filters($ckan_domain,$filters);
+
+}
+
 ?>
 
 <?php get_header(); ?>
@@ -23,7 +38,7 @@ require_once('page-laws-config.php');
     }
     $laws = array();
     if (!IsNullOrEmptyString($filter_odm_taxonomy)){
-      $laws = get_law_datasets($CKAN_DOMAIN,"taxonomy",$filter_odm_taxonomy);
+      $laws = get_law_datasets($CKAN_DOMAIN,"extras_taxonomy",$filter_odm_taxonomy);
     }else if (!IsNullOrEmptyString($filter_odm_document_type)){
       $laws = get_law_datasets($CKAN_DOMAIN,"odm_document_type",$filter_odm_document_type);
     }else{
@@ -92,7 +107,7 @@ require_once('page-laws-config.php');
                 <td>
                   <?php
                   if (isset($law_record['odm_promulgation_date'])){
-                      if ((qtranxf_getLanguage() == "kh") || (qtranxf_getLanguage == "km")){
+                      if (function_exists('qtranxf_getLanguage') && ((qtranxf_getLanguage() == "kh") || (qtranxf_getLanguage == "km"))){
                           echo convert_date_to_kh_date(date("d.m.Y", strtotime($law_record['odm_promulgation_date'])));
                       }else{
                         echo ($law_record['odm_promulgation_date']);
@@ -199,7 +214,30 @@ jQuery(document).ready(function($) {
     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
     order: [[ 0, 'asc' ]],
     displayLength: 25
+
+    <?php if (CURRENT_LANGUAGE == "km" || CURRENT_LANGUAGE == "kh"){?>
+      , "oLanguage": {
+        "sLengthMenu": 'បង្ហាញចំនួន​ <select>'+
+            '<option value="10">១០</option>'+
+            '<option value="25"> ២៥</option>'+
+            '<option value="50"> ៥០</option>'+
+            '<option value="-1">ទាំងអស់</option>'+
+        '</select> ក្នុងមួយទំព័រ',
+        "sZeroRecords": "ព័ត៌មានពុំអាចរកបាន",
+        "sInfo":"បង្ហាញពីទី _START_ ដល់ _END_ នៃចំនួនសរុប _TOTAL_",
+        "sInfoFiltered": "(ទាញចេញពីទិន្នន័យច្បាប់សរុបចំនួន _MAX_)",
+        "sSearch":"ស្វែងរក",
+        "oPaginate": {
+            "sFirst": "ទំព័រដំបូង",
+            "sLast": "ចុងក្រោយ",
+            "sPrevious": "មុន",
+            "sNext": "បន្ទាប់"
+            }
+        }
+    <?php } ?>
   });
+
+
 
   $("#search_all").keyup(function () {
     console.log("filtering page " + this.value);

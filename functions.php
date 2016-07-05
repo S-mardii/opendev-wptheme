@@ -48,9 +48,6 @@ require_once STYLESHEETPATH.'/inc/advanced-navigation.php';
 // Advanced nav
 require_once STYLESHEETPATH.'/inc/category-walker.php';
 
-// Datastore API functions
-require_once STYLESHEETPATH.'/inc/datastore_api.php';
-
 $country_name = str_replace('Open Development ', '', get_bloginfo('name'));
 define('COUNTRY_NAME', strtolower($country_name));
 define('SITE_NAME', $country_name);
@@ -1305,6 +1302,7 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
     );
     $query_get_post = new WP_Query( $args_get_post );
     if($query_get_post->have_posts() ){
+
       $cat_layer_ul = "<ul class='cat-layers switch-layers'>";
       while ( $query_get_post->have_posts() ) : $query_get_post->the_post();
           if(posts_for_both_and_current_languages(get_the_ID(), CURRENT_LANGUAGE)){
@@ -1338,6 +1336,7 @@ function print_category_by_post_type( $category, $post_type ="post", $current_ca
             $layer_items .= '</li>';
           }
       endwhile;
+
       wp_reset_postdata();
       $cat_layer_close_ul = "</ul>";
       $print_items = "";
@@ -1610,69 +1609,6 @@ function buildTopTopicNav($lang)
 
 }
 
-function get_law_datasets($ckan_domain,$filter_key,$filter_value){
-  $ckanapi_url = $ckan_domain . "/api/3/action/package_search?q=*:*&fq=type:laws_record&rows=1000";
-  $json = @file_get_contents($ckanapi_url);
-  if ($json === FALSE) return [];
-  $result = json_decode($json, true) ?: [];
-  $datasets = $result["result"]["results"];
-  if (isset($filter_key) && isset($filter_value)){
-    foreach ($datasets as $key => $dataset){
-      if ( !isset($dataset[$filter_key])){
-        unset($datasets[$key]);
-      }else{
-        if (is_array($dataset[$filter_key])){
-          if (!in_array($filter_value,$dataset[$filter_key])){
-            unset($datasets[$key]);
-          }
-        }else if ($dataset[$filter_key] != $filter_value){
-          unset($datasets[$key]);
-        }
-      }
-    }
-  }
-  return $datasets;
-}
-
-// function get_law_datasets($filter_odm_taxonomy,$filter_odm_document_type){
-//   $shortcode = '[wpckan_query_datasets query="*:*" limit=1000 type="laws_record" include_fields_extra="taxonomy,odm_document_type,title_translated,odm_document_number,odm_promulgation_date" format="json"]';
-//   $laws_json = null;
-//
-//   try{
-//     $laws_json = do_shortcode($shortcode);
-//   } catch (Exception $e){
-//     return [];
-//   }
-//
-//   $laws = json_decode($laws_json,true);
-//   foreach ($laws["wpckan_dataset_list"] as $key => $law_record){
-//     if (!empty($filter_odm_document_type) && $law_record['wpckan_dataset_extras']['wpckan_dataset_extras-odm_document_type'] != $filter_odm_document_type){
-//       unset($laws["wpckan_dataset_list"][$key]);
-//     }
-//     if (!empty($filter_odm_taxonomy) && !in_array($filter_odm_taxonomy,$law_record['wpckan_dataset_extras']['wpckan_dataset_extras-taxonomy'])){
-//       unset($laws["wpckan_dataset_list"][$key]);
-//     }
-//   }
-//   return $laws["wpckan_dataset_list"];
-// }
-
-function get_dataset_by_id($ckan_domain,$id){
-  $ckanapi_url = $ckan_domain . "/api/3/action/package_show?id=" . $id;
-  //echo $ckanapi_url;
-  $json = @file_get_contents($ckanapi_url);
-  if ($json === FALSE) return [];
-  $datasets = json_decode($json, true) ?: [];
-  return $datasets["result"];
-}
-
-function get_datasets_filter($ckan_domain,$key,$value){
-  $ckanapi_url = $ckan_domain . "/api/3/action/package_search?fq=" . $key . ":" . $value;
-  $json = @file_get_contents($ckanapi_url);
-  if ($json === FALSE) return [];
-  $datasets = json_decode($json, true) ?: [];
-  return $datasets["result"]["results"];
-}
-
 function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $individual_layer='', $atlernative_links = 0, $showing_fields =""){
   $lang = CURRENT_LANGUAGE;
 
@@ -1699,7 +1635,7 @@ function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $indi
 
   // get ckan record by id
 
-  $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
+  $get_info_from_ckan = wpckan_get_dataset_by_id($ckan_domain,$ckan_dataset_id);
   if(!empty($get_info_from_ckan)){
   ?>
     <div class="layer-toggle-info toggle-info toggle-info-<?php echo $individual_layer->ID; ?>">
