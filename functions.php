@@ -70,7 +70,7 @@ else {
   $full_domain = $_SERVER['SERVER_NAME'];
   $just_domain = preg_replace("/^(.*\.)?([^.]*\..*)$/", "$2", $_SERVER['HTTP_HOST']);
   $ckanDomain = 'https://data.'.$just_domain;
-    if (preg_match('/odm.web/',$wpDomain)) //odm.web is H.E local address
+    if (preg_match('/odm_test.web/',$wpDomain)) //odm.web is H.E local address
         $ckanDomain = 'https://data.opendevelopmentmekong.net';
 
 }
