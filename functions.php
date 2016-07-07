@@ -1657,7 +1657,7 @@ function get_datasets_filter($ckan_domain,$key,$value){
   return $datasets["result"]["results"];
 }
 
-function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $individual_layer='', $atlernative_links = 0, $showing_fields =""){
+function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $individual_layer='', $atlernative_links = 0, $showing_fields){
   $lang = CURRENT_LANGUAGE;
 
   $attribute_metadata = array(
@@ -1682,7 +1682,6 @@ function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $indi
                       );
 
   // get ckan record by id
-
   $get_info_from_ckan = get_dataset_by_id($ckan_domain,$ckan_dataset_id);
   if(!empty($get_info_from_ckan)){
   ?>
@@ -1690,20 +1689,20 @@ function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $indi
         <table border="0" class="toggle-talbe">
           <tr><td colspan="2"><h5><?php echo $get_info_from_ckan['title_translated'][$lang]!=""?  $get_info_from_ckan['title_translated'][$lang] : $individual_layer->post_title; ?></h5></td></tr>
           <?php
-          if($showing_fields == ""){
+          if(empty($showing_fields)){
             if($get_info_from_ckan){
               foreach ($get_info_from_ckan as $key => $info) {
                 if(!empty($get_info_from_ckan)){
                     if($key == 'license_id' && $get_info_from_ckan['license_id']!=""){ ?>
                       <tr>
-                          <td><?php echo $attribute_metadata['license_id']; ?></td>
-                          <td><?php echo $info == "unspecified"? ucwords($get_info_from_ckan['license_id'] ) : $get_info_from_ckan['license_id']; ?></td>
+                          <td><?php _e($attribute_metadata['license_id'],"opendev"); ?></td>
+                          <td><?php echo $info == "unspecified"? ucwords(__($get_info_from_ckan['license_id'],"opendev")) : __($get_info_from_ckan['license_id'],"opendev"); ?></td>
                       </tr>
                     <?php
                     }else{
                         if(array_key_exists($key, $attribute_metadata)){
                     ?>    <tr>
-                              <td><?php echo $attribute_metadata[$key]; ?></td><td><?php echo is_array($info) ? $info[$lang]: $info; ?></td>
+                              <td><?php _e($attribute_metadata[$key],"opendev"); ?></td><td><?php echo is_array($info) ? $info[$lang]: $info; ?></td>
                           </tr>
                     <?php
                         }
@@ -1716,13 +1715,13 @@ function get_metadata_info_of_dataset_by_id($ckan_domain,$ckan_dataset_id, $indi
               if(!empty($get_info_from_ckan)){
                   if($key == 'license_id' && $get_info_from_ckan['license_id']!=""){ ?>
                     <tr>
-                        <td><?php echo $showing_fields['license_id']; ?></td>
-                        <td><?php echo $info == "unspecified"? ucwords($get_info_from_ckan['license_id'] ) : $get_info_from_ckan['license_id']; ?></td>
+                        <td><?php _e($showing_fields['license_id'],"opendev"); ?></td>
+                        <td><?php echo $info == "unspecified"? ucwords(__($get_info_from_ckan['license_id'],"opendev") ) : __($get_info_from_ckan['license_id'],"opendev"); ?></td>
                     </tr>
                   <?php
                   }else{  ?>
                       <tr>
-                          <td><?php echo $showing_fields[$key]; ?></td>
+                          <td><?php _e($showing_fields[$key],"opendev"); ?></td>
                           <td><?php echo is_array($get_info_from_ckan[$key]) ? $get_info_from_ckan[$key][$lang]: $get_info_from_ckan[$key]; ?></td>
                       </tr>
                   <?php
